@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">Test task</string>
+    <string name="send_funds_title">Send funds</string>
+    <string name="send_funds_header">How much do you want to send?</string>
+    <string name="send_funds_field_title_send">You send</string>
+    <string name="send_funds_field_title_reveive">Recipient gets</string>
+    <string name="send_funds_money_with_currency"> %1$s%2$s</string>
+    <string name="send_funds_balance">Balance:</string>
+    <string name="send_funds_available_balance">Available Balance: </string>
+    <string name="send_funds_amount">Amount</string>
+    <string name="send_funds_exchange_label">Estimated exchange rate</string>
+    <string name="send_funds_exchange_rates">1  %1$s = %3$s %2$s (1 %2$s = %4$s %1$s)</string>
+    <string name="send_funds_exchange_rates_hint">Exchange rates are real time and mid-market. The values provided are estimates and may change at the time of actual execution.</string>
+    <string name="send_funds_transfer_options_title">Transfer Options</string>
+    <string name="send_funds_transfer_options_regular">Regular</string>
+    <string name="send_funds_transfer_options_express">Express (+%1$s)</string>
+    <string name="send_funds_purpose_advertising">Advertising fees</string>
+    <string name="send_funds_purpose_expense">Expense reimbursement</string>
+    <string name="send_funds_purpose_financial">Financial services</string>
+    <string name="send_funds_purpose_legal">Legal services</string>
+    <string name="send_funds_purpose_medical">Medical reimbursement</string>
+    <string name="send_funds_purpose_payroll">Payroll</string>
+    <string name="send_funds_purpose_processing">Processing</string>
+    <string name="send_funds_purpose_trade">Trade related services</string>
+    <string name="send_funds_purpose_transaction">Transaction between banks</string>
+    <string name="send_funds_purpose_transportation">Transportation costs</string>
+    <string name="send_funds_purpose_travel">Travel related services</string>
+    <string name="send_funds_purpose_personal">Personal</string>
+    <string name="send_funds_purpose_other">Other</string>
+    <string name="send_funds_purpose_hint">Purpose</string>
+    <string name="send_funds_purpose_value_hint">Payment Purpose</string>
+    <string name="send_funds_document_upload">Upload Document</string>
+    <string name="send_funds_document_types">File types allowed: JPEG, JPG, PNG, PDF, DOC, DOCX.</string>
+    <string name="send_funds_document_title">Supported Documents:</string>
+    <string name="send_funds_document_hint">* Up to 10 files allowed.</string>
+    <string name="send_funds_beneficiary">Save Beneficiary</string>
+    <string name="send_funds_agreement_text">By selecting the checkbox below, I acknowledge and agree that Wittix UAB and/or its subsidiaries ("WTX") operate sol…</string>
+    <string name="send_funds_agreement_more">Read more</string>
+    <string name="send_funds_transfer">TRANSFER REVIEW</string>
+
 </resources>
