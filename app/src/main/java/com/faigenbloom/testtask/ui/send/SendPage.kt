@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.common.BaseTextField
+import com.faigenbloom.testtask.ui.common.CurrencyPicker
 import com.faigenbloom.testtask.ui.common.CustomCheckbox
 import com.faigenbloom.testtask.ui.common.DualStyleText
 import com.faigenbloom.testtask.ui.common.EUR
@@ -51,6 +52,7 @@ import com.faigenbloom.testtask.ui.common.getFlag
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import com.faigenbloom.testtask.ui.theme.tint
 import java.util.Currency
+import java.util.Locale
 
 @Composable
 fun SendPage(
@@ -65,6 +67,18 @@ fun SendPage(
             SendingOptions(state = state)
             TransferButton(state = state)
         }
+    }
+    Dialogs(state = state.currencyDialogState)
+}
+
+@Composable
+private fun Dialogs(state: CurrencyDialogState) {
+    if (state.isCurrencyDialogVisibleState) {
+        CurrencyPicker(
+            currencies = state.availableCurrencies,
+            chosenCurrency = state.chosenCurrencyState,
+            onCurrencyPicked = state.onCurrencyPicked,
+        )
     }
 }
 
@@ -377,14 +391,16 @@ private fun MainInfo(state: SendPageState) {
     ) {
         AmountInputField(
             title = stringResource(R.string.send_funds_field_title_send),
-            sendAmountState = state.sendAmountState,
-            sendCurrencyState = state.sendCurrencyState,
+            amountState = state.sendAmountState,
+            currencyState = state.sendCurrencyState,
+            onCurrencyClicked = { state.onCurrencyChangeRequsted(true) },
         )
         BalanceFields(state = state)
         AmountInputField(
             title = stringResource(R.string.send_funds_field_title_reveive),
-            sendAmountState = state.receiveAmountState,
-            sendCurrencyState = state.receiveCurrencyState,
+            amountState = state.receiveAmountState,
+            currencyState = state.receiveCurrencyState,
+            onCurrencyClicked = { state.onCurrencyChangeRequsted(false) },
         )
         ReceiveFields(state = state)
         ExchangeRatesHint()
@@ -466,11 +482,12 @@ private fun Documents(state: SendPageState) {
 @Composable
 private fun AmountInputField(
     title: String,
-    sendAmountState: MutableState<String>,
-    sendCurrencyState: MutableState<Currency>,
+    amountState: MutableState<String>,
+    currencyState: MutableState<Currency>,
+    onCurrencyClicked: () -> Unit,
 ) {
-    var sendAmountText by remember { sendAmountState }
-    val sendCurrency by remember { sendCurrencyState }
+    var sendAmountText by remember { amountState }
+    val sendCurrency by remember { currencyState }
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -512,7 +529,8 @@ private fun AmountInputField(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(0.3f),
+                .weight(0.3f)
+                .clickable { onCurrencyClicked() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -656,6 +674,14 @@ private fun SendPagePreview() {
                     isSaveBeneficiaryState = remember { mutableStateOf(true) },
                     isAgreedState = remember { mutableStateOf(true) },
                     onTransfer = {},
+                    currencyDialogState = CurrencyDialogState(
+                        availableCurrencies = listOf(),
+                        isSend = false,
+                        isCurrencyDialogVisibleState = false,
+                        chosenCurrencyState = Currency.getInstance(Locale.getDefault()),
+                        onCurrencyPicked = { },
+                    ),
+                    onCurrencyChangeRequsted = { },
                 ),
             )
         }

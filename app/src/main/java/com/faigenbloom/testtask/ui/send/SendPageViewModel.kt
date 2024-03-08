@@ -5,12 +5,47 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.util.Currency
 import java.util.Locale
 
 class SendPageViewModel : ViewModel() {
     var onTransfer: () -> Unit = {}
     private fun onTransfer() {
+        onTransfer()
+    }
+
+    private fun onCurrencyChangeRequsted(isForSend: Boolean) {
+        _stateFlow.update {
+            it.copy(
+                currencyDialogState = it.currencyDialogState.copy(
+                    isSend = isForSend,
+                    isCurrencyDialogVisibleState = true,
+                    chosenCurrencyState = if (isForSend) {
+                        it.sendCurrencyState.value
+                    } else {
+                        it.receiveCurrencyState.value
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun onCurrencyPicked(chosenCurrency: Currency) {
+        val currencyState = if (state.currencyDialogState.isSend) {
+            state.sendCurrencyState
+        } else {
+            state.receiveCurrencyState
+        }
+        currencyState.value = chosenCurrency
+
+        _stateFlow.update {
+            it.copy(
+                currencyDialogState = it.currencyDialogState.copy(
+                    isCurrencyDialogVisibleState = false,
+                ),
+            )
+        }
     }
 
     private val state: SendPageState
@@ -18,15 +53,29 @@ class SendPageViewModel : ViewModel() {
     private val _stateFlow = MutableStateFlow(
         SendPageState(
             onTransfer = ::onTransfer,
+            onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
+            currencyDialogState = CurrencyDialogState(
+                onCurrencyPicked = ::onCurrencyPicked,
+            ),
         ),
     )
     val stateFlow = _stateFlow.asStateFlow()
 
     init {
+        _stateFlow.update {
+            it.copy(
+                currencyDialogState = it.currencyDialogState.copy(
+                    availableCurrencies = Currency.getAvailableCurrencies().toList(),
+                ),
+            )
+        }
     }
 }
 
 data class SendPageState(
+    val currencyDialogState: CurrencyDialogState = CurrencyDialogState(
+        onCurrencyPicked = {},
+    ),
     val sendAmountState: MutableState<String> = mutableStateOf(""),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
     val receiveAmountState: MutableState<String> = mutableStateOf(""),
@@ -41,7 +90,16 @@ data class SendPageState(
     val purposeTextState: MutableState<String> = mutableStateOf(""),
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
-    val onTransfer: () -> Unit,
+    val onCurrencyChangeRequsted: (Boolean) -> Unit,
+    val onTransfer: () -> Unit = {},
+)
+
+data class CurrencyDialogState(
+    val availableCurrencies: List<Currency> = listOf(),
+    val isSend: Boolean = false,
+    val isCurrencyDialogVisibleState: Boolean = false,
+    val chosenCurrencyState: Currency = Currency.getInstance(Locale.getDefault()),
+    val onCurrencyPicked: (chosenCurrency: Currency) -> Unit = {},
 )
 
 enum class PurposeType {

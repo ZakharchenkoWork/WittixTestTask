@@ -42,5 +42,7 @@
     <string name="send_funds_agreement_text">By selecting the checkbox below, I acknowledge and agree that Wittix UAB and/or its subsidiaries ("WTX") operate sol…</string>
     <string name="send_funds_agreement_more">Read more</string>
     <string name="send_funds_transfer">TRANSFER REVIEW</string>
+    <string name="currency_dialog_title">Choose currency:</string>
+    <string name="dialog_button_done">OK</string>
 
 </resources>
