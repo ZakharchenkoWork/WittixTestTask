@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Test task</string>
+    <string name="bar_dashboard">Dashboard</string>
+    <string name="bar_debit">Debit cards</string>
+    <string name="bar_add">Add</string>
+    <string name="bar_statement">Statement</string>
+    <string name="bar_settings">Settings</string>
     <string name="send_funds_title">Send funds</string>
     <string name="send_funds_header">How much do you want to send?</string>
     <string name="send_funds_field_title_send">You send</string>
