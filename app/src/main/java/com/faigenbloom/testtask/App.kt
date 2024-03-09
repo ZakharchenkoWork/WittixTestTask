@@ -1,6 +1,10 @@
 package com.faigenbloom.testtask
 
 import android.app.Application
+import com.faigenbloom.testtask.domain.balance.balanceModule
+import com.faigenbloom.testtask.domain.currency.currencyModule
+import com.faigenbloom.testtask.domain.exchange.exchangeRatesModule
+import com.faigenbloom.testtask.domain.transfer.transferModule
 import com.faigenbloom.testtask.ui.send.sendingModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication
@@ -15,6 +19,10 @@ open class App : Application() {
             androidContext(this@App)
             modules(
                 sendingModule,
+                currencyModule,
+                balanceModule,
+                exchangeRatesModule,
+                transferModule,
             )
         }
     }

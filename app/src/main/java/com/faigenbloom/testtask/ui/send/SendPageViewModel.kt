@@ -3,15 +3,31 @@ package com.faigenbloom.testtask.ui.send
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.faigenbloom.testtask.domain.balance.GetBalanceUseCase
+import com.faigenbloom.testtask.domain.currency.GetAllCurrenciesUseCase
+import com.faigenbloom.testtask.domain.currency.GetMainCurrencyUseCase
+import com.faigenbloom.testtask.domain.currency.GetReceiverCurrencyUseCase
+import com.faigenbloom.testtask.domain.exchange.GetExchangeRatesUseCase
+import com.faigenbloom.testtask.domain.transfer.GetTransferPriceUseCase
 import com.faigenbloom.testtask.ui.common.animations.AnimationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
-class SendPageViewModel : ViewModel() {
+class SendPageViewModel(
+    private val getMainCurrencyUseCase: GetMainCurrencyUseCase,
+    private val getReceiverCurrencyUseCase: GetReceiverCurrencyUseCase,
+    private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase,
+    private val getBalanceUseCase: GetBalanceUseCase,
+    private val getExchangeRatesUseCase: GetExchangeRatesUseCase,
+    private val getTransferPriceUseCase: GetTransferPriceUseCase,
+) : ViewModel() {
     var onTransfer: () -> Unit = {}
     var onDocumentPickerRequested: () -> Unit = {}
     fun onDocumentLoaded(uri: Uri) {
@@ -63,6 +79,43 @@ class SendPageViewModel : ViewModel() {
                 ),
             )
         }
+        viewModelScope.launch {
+            updateCurrencies()
+        }
+    }
+
+    private suspend fun updateCurrenciesInDialog() {
+        _stateFlow.update {
+            it.copy(
+                currencyDialogState = it.currencyDialogState.copy(
+                    availableCurrencies = getAllCurrenciesUseCase(it.sendCurrencyState.value),
+                ),
+            )
+        }
+    }
+
+    private suspend fun updateTransferPrices() {
+        state.expressPriceAmount.value = getTransferPriceUseCase()
+    }
+
+    private suspend fun reloadCurrencies() {
+        state.sendCurrencyState.value = getMainCurrencyUseCase()
+        state.receiveCurrencyState.value = getReceiverCurrencyUseCase()
+    }
+
+    private suspend fun prepareBalances() {
+        val balanceModel = getBalanceUseCase()
+        state.balanceState.value = balanceModel.total
+        state.availableBalanceState.value = balanceModel.available
+    }
+
+    private suspend fun updateCurrencies() {
+        val exchangeRates = getExchangeRatesUseCase(
+            state.sendCurrencyState.value,
+            state.receiveCurrencyState.value,
+        )
+        state.exchangeRateState.value = exchangeRates.from
+        state.reverseExchangeRateState.value = exchangeRates.to
     }
 
     private fun onHideSuccess() {
@@ -94,12 +147,12 @@ class SendPageViewModel : ViewModel() {
     val stateFlow = _stateFlow.asStateFlow()
 
     init {
-        _stateFlow.update {
-            it.copy(
-                currencyDialogState = it.currencyDialogState.copy(
-                    availableCurrencies = Currency.getAvailableCurrencies().toList(),
-                ),
-            )
+        viewModelScope.launch {
+            prepareBalances()
+            reloadCurrencies()
+            updateCurrencies()
+            updateCurrenciesInDialog()
+            updateTransferPrices()
         }
     }
 }
@@ -109,18 +162,18 @@ data class SendPageState(
         onCurrencyPicked = {},
     ),
     val successState: AnimationState = AnimationState(),
-    val sendAmountState: MutableState<String> = mutableStateOf(""),
+    val sendAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
-    val receiveAmountState: MutableState<String> = mutableStateOf(""),
+    val receiveAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val receiveCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
     val balanceState: MutableState<String> = mutableStateOf(""),
     val availableBalanceState: MutableState<String> = mutableStateOf(""),
     val exchangeRateState: MutableState<String> = mutableStateOf(""),
     val reverseExchangeRateState: MutableState<String> = mutableStateOf(""),
     val isTransferRegularState: MutableState<Boolean> = mutableStateOf(false),
-    val expressCostAmount: MutableState<String> = mutableStateOf(""),
+    val expressPriceAmount: MutableState<String> = mutableStateOf(""),
     val purposeTypeState: MutableState<PurposeType> = mutableStateOf(PurposeType.NONE),
-    val purposeTextState: MutableState<String> = mutableStateOf(""),
+    val purposeTextState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val dropdownShownState: MutableState<Boolean> = mutableStateOf(false),
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),

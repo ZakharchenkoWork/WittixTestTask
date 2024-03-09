@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -42,15 +43,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
-import com.faigenbloom.testtask.ui.common.BaseTextField
 import com.faigenbloom.testtask.ui.common.CurrencyPicker
 import com.faigenbloom.testtask.ui.common.CustomCheckbox
-import com.faigenbloom.testtask.ui.common.DualStyleText
 import com.faigenbloom.testtask.ui.common.EUR
 import com.faigenbloom.testtask.ui.common.ILS
 import com.faigenbloom.testtask.ui.common.TopBar
@@ -58,6 +59,9 @@ import com.faigenbloom.testtask.ui.common.animations.AnimateTabs
 import com.faigenbloom.testtask.ui.common.animations.AnimatedVisibility
 import com.faigenbloom.testtask.ui.common.animations.Success
 import com.faigenbloom.testtask.ui.common.getFlag
+import com.faigenbloom.testtask.ui.common.text.BaseTextField
+import com.faigenbloom.testtask.ui.common.text.DualStyleText
+import com.faigenbloom.testtask.ui.common.text.MoneyTextTransformation
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import com.faigenbloom.testtask.ui.theme.tint
 import java.util.Currency
@@ -202,7 +206,7 @@ private fun BalanceFields(state: SendPageState) {
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
-            balanceText,
+            MoneyTextTransformation().format(balanceText),
         ),
         secondStyle = SpanStyle(
             color = colorScheme.onBackground,
@@ -221,7 +225,7 @@ private fun BalanceFields(state: SendPageState) {
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
-            availableBalanceText,
+            MoneyTextTransformation().format(availableBalanceText),
         ),
         secondStyle = SpanStyle(
             color = colorScheme.onBackground,
@@ -248,8 +252,8 @@ private fun ReceiveFields(state: SendPageState) {
     RatesText(
         firstCurrency = sendCurrency,
         secondCurrency = receiveCurrency,
-        firstRate = exchangeRateState,
-        secondRate = reverseExchangeRateState,
+        firstRate = MoneyTextTransformation().format(exchangeRateState),
+        secondRate = MoneyTextTransformation().format(reverseExchangeRateState),
     )
 }
 
@@ -272,7 +276,7 @@ private fun ExchangeRatesHint() {
 @Composable
 private fun TransferOptions(state: SendPageState) {
     var isTransferRegular by remember { state.isTransferRegularState }
-    val expressCostAmount by remember { state.expressCostAmount }
+    val expressCostAmount by remember { state.expressPriceAmount }
     val sendCurrency by remember { state.sendCurrencyState }
     Text(
         modifier = Modifier
@@ -306,7 +310,7 @@ private fun TransferOptions(state: SendPageState) {
                 stringResource(
                     R.string.send_funds_money_with_currency,
                     sendCurrency.symbol,
-                    expressCostAmount,
+                    MoneyTextTransformation().format(expressCostAmount),
                 ),
             ),
             isChecked = isTransferRegular.not(),
@@ -498,7 +502,7 @@ private fun Documents(state: SendPageState) {
 @Composable
 private fun AmountInputField(
     title: String,
-    amountState: MutableState<String>,
+    amountState: MutableState<TextFieldValue>,
     currencyState: MutableState<Currency>,
     onCurrencyClicked: () -> Unit,
 ) {
@@ -529,12 +533,26 @@ private fun AmountInputField(
                 .weight(0.7f)
                 .padding(all = 8.dp),
             value = sendAmountText,
-            textStyle = typography.titleLarge.copy(
-                color = colorScheme.onBackground,
-            ),
-            hint = stringResource(id = R.string.send_funds_amount),
-            onValueChange = { sendAmountText = it },
-        )
+            textStyle = typography.titleLarge,
+            color = colorScheme.onBackground,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            visualTransformation = MoneyTextTransformation(),
+            onValueChange = {
+                sendAmountText = it
+            },
+        ) {
+            Row(
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = stringResource(id = R.string.send_funds_amount),
+                    color = colorScheme.onPrimaryContainer,
+                    style = typography.bodyMedium,
+                )
+            }
+        }
         Divider(
             modifier = Modifier
                 .fillMaxHeight()
@@ -685,13 +703,22 @@ private fun PurposeFields(state: SendPageState) {
                         .fillMaxWidth()
                         .padding(all = 8.dp),
                     value = purposeText,
-                    hint = stringResource(id = R.string.send_funds_purpose_value_hint),
                     textStyle = typography.titleLarge,
                     color = colorScheme.onBackground,
-                    hintColor = colorScheme.onPrimaryContainer,
-                    hintStyle = typography.bodyMedium,
                     onValueChange = { purposeText = it },
-                )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            text = stringResource(id = R.string.send_funds_purpose_value_hint),
+                            color = colorScheme.onPrimaryContainer,
+                            style = typography.bodyMedium,
+                        )
+                    }
+                }
             }
         }
     }
@@ -724,18 +751,18 @@ private fun SendPagePreview() {
         Surface {
             SendPage(
                 state = SendPageState(
-                    sendAmountState = remember { mutableStateOf("100,000") },
+                    sendAmountState = remember { mutableStateOf(TextFieldValue("100,000")) },
                     sendCurrencyState = remember { mutableStateOf(Currency.getInstance(EUR)) },
-                    receiveAmountState = remember { mutableStateOf("358,521.13") },
+                    receiveAmountState = remember { mutableStateOf(TextFieldValue("358,521.13")) },
                     receiveCurrencyState = remember { mutableStateOf(Currency.getInstance(ILS)) },
                     balanceState = remember { mutableStateOf("2,340.00") },
                     availableBalanceState = remember { mutableStateOf("1,700.50") },
                     exchangeRateState = remember { mutableStateOf("3.61206") },
                     reverseExchangeRateState = remember { mutableStateOf("0,28") },
                     isTransferRegularState = remember { mutableStateOf(false) },
-                    expressCostAmount = remember { mutableStateOf("50") },
+                    expressPriceAmount = remember { mutableStateOf("50") },
                     purposeTypeState = remember { mutableStateOf(PurposeType.NONE) },
-                    purposeTextState = remember { mutableStateOf("") },
+                    purposeTextState = remember { mutableStateOf(TextFieldValue()) },
                     isSaveBeneficiaryState = remember { mutableStateOf(true) },
                     isAgreedState = remember { mutableStateOf(true) },
                     onTransfer = {},
