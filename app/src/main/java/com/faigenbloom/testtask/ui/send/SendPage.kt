@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -46,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.common.BaseTextField
@@ -55,8 +53,10 @@ import com.faigenbloom.testtask.ui.common.CustomCheckbox
 import com.faigenbloom.testtask.ui.common.DualStyleText
 import com.faigenbloom.testtask.ui.common.EUR
 import com.faigenbloom.testtask.ui.common.ILS
-import com.faigenbloom.testtask.ui.common.Success
 import com.faigenbloom.testtask.ui.common.TopBar
+import com.faigenbloom.testtask.ui.common.animations.AnimateTabs
+import com.faigenbloom.testtask.ui.common.animations.AnimatedVisibility
+import com.faigenbloom.testtask.ui.common.animations.Success
 import com.faigenbloom.testtask.ui.common.getFlag
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import com.faigenbloom.testtask.ui.theme.tint
@@ -415,7 +415,12 @@ private fun MainInfo(state: SendPageState) {
         ReceiveFields(state = state)
         ExchangeRatesHint()
         TransferOptions(state = state)
-        PurposeFields(state = state)
+        AnimateTabs(state.isTransferRegularState.value) {
+            Column {
+                PurposeFields(state = state)
+            }
+        }
+
         Documents(state = state)
     }
 }
@@ -657,36 +662,41 @@ private fun PurposeFields(state: SendPageState) {
             }
         }
     }
-    if (purposeType == PurposeType.NONE || purposeType == PurposeType.OTHER) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .padding(top = 4.dp)
-                .fillMaxWidth()
-                .height(50.dp)
-                .border(
-                    width = 1.dp,
-                    shape = RoundedCornerShape(8.dp),
-                    color = colorScheme.primaryContainer,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            BaseTextField(
+    AnimatedVisibility(
+        isVisible = purposeType == PurposeType.NONE || purposeType == PurposeType.OTHER,
+    ) { isVisible ->
+        if (isVisible) {
+            Row(
                 modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 4.dp)
                     .fillMaxWidth()
-                    .padding(all = 8.dp),
-                value = purposeText,
-                hint = stringResource(id = R.string.send_funds_purpose_value_hint),
-                textStyle = typography.titleLarge,
-                color = colorScheme.onBackground,
-                hintColor = colorScheme.onPrimaryContainer,
-                hintStyle = typography.bodyMedium,
-                onValueChange = { purposeText = it },
-            )
+                    .height(50.dp)
+                    .border(
+                        width = 1.dp,
+                        shape = RoundedCornerShape(8.dp),
+                        color = colorScheme.primaryContainer,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                BaseTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 8.dp),
+                    value = purposeText,
+                    hint = stringResource(id = R.string.send_funds_purpose_value_hint),
+                    textStyle = typography.titleLarge,
+                    color = colorScheme.onBackground,
+                    hintColor = colorScheme.onPrimaryContainer,
+                    hintStyle = typography.bodyMedium,
+                    onValueChange = { purposeText = it },
+                )
+            }
         }
     }
 }
+
 @Composable
 private fun PurposeType.stringResource(): String {
     return when (this) {
