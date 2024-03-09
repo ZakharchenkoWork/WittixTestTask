@@ -1,8 +1,10 @@
 package com.faigenbloom.testtask.ui.send
 
+import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.faigenbloom.testtask.ui.common.AnimationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,6 +13,21 @@ import java.util.Locale
 
 class SendPageViewModel : ViewModel() {
     var onTransfer: () -> Unit = {}
+    var onDocumentPickerRequested: () -> Unit = {}
+    fun onDocumentLoaded(uri: Uri) {
+        _stateFlow.update {
+            it.copy(
+                successState = it.successState.copy(
+                    isShown = true,
+                ),
+            )
+        }
+    }
+
+    private fun onDocumentPicker() {
+        onDocumentPickerRequested()
+    }
+
     private fun onTransfer() {
         onTransfer()
     }
@@ -48,15 +65,30 @@ class SendPageViewModel : ViewModel() {
         }
     }
 
+    private fun onHideSuccess() {
+        _stateFlow.update {
+            it.copy(
+                successState = it.successState.copy(
+                    isShown = false,
+                ),
+            )
+        }
+    }
+
     private val state: SendPageState
         get() = _stateFlow.value
     private val _stateFlow = MutableStateFlow(
         SendPageState(
-            onTransfer = ::onTransfer,
-            onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
             currencyDialogState = CurrencyDialogState(
                 onCurrencyPicked = ::onCurrencyPicked,
             ),
+            successState = AnimationState(
+                isShown = false,
+                onFinish = ::onHideSuccess,
+            ),
+            onTransfer = ::onTransfer,
+            onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
+            onDocumentRequsted = ::onDocumentPicker,
         ),
     )
     val stateFlow = _stateFlow.asStateFlow()
@@ -76,6 +108,7 @@ data class SendPageState(
     val currencyDialogState: CurrencyDialogState = CurrencyDialogState(
         onCurrencyPicked = {},
     ),
+    val successState: AnimationState = AnimationState(),
     val sendAmountState: MutableState<String> = mutableStateOf(""),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
     val receiveAmountState: MutableState<String> = mutableStateOf(""),
@@ -88,9 +121,11 @@ data class SendPageState(
     val expressCostAmount: MutableState<String> = mutableStateOf(""),
     val purposeTypeState: MutableState<PurposeType> = mutableStateOf(PurposeType.NONE),
     val purposeTextState: MutableState<String> = mutableStateOf(""),
+    val dropdownShownState: MutableState<Boolean> = mutableStateOf(false),
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
     val onCurrencyChangeRequsted: (Boolean) -> Unit,
+    val onDocumentRequsted: () -> Unit = {},
     val onTransfer: () -> Unit = {},
 )
 

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.faigenbloom.testtask.ui.send
 
 import androidx.compose.foundation.Image
@@ -19,6 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -39,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.common.BaseTextField
@@ -47,6 +55,7 @@ import com.faigenbloom.testtask.ui.common.CustomCheckbox
 import com.faigenbloom.testtask.ui.common.DualStyleText
 import com.faigenbloom.testtask.ui.common.EUR
 import com.faigenbloom.testtask.ui.common.ILS
+import com.faigenbloom.testtask.ui.common.Success
 import com.faigenbloom.testtask.ui.common.TopBar
 import com.faigenbloom.testtask.ui.common.getFlag
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
@@ -68,11 +77,12 @@ fun SendPage(
             TransferButton(state = state)
         }
     }
-    Dialogs(state = state.currencyDialogState)
+    CurrencyDialog(state = state.currencyDialogState)
+    Success(state.successState)
 }
 
 @Composable
-private fun Dialogs(state: CurrencyDialogState) {
+private fun CurrencyDialog(state: CurrencyDialogState) {
     if (state.isCurrencyDialogVisibleState) {
         CurrencyPicker(
             currencies = state.availableCurrencies,
@@ -428,7 +438,8 @@ private fun Documents(state: SendPageState) {
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
                 color = colorScheme.tertiaryContainer,
-            ),
+            )
+            .clickable { state.onDocumentRequsted() },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
@@ -562,44 +573,89 @@ private fun AmountInputField(
 
 @Composable
 private fun PurposeFields(state: SendPageState) {
-    val purposeType by remember { state.purposeTypeState }
+    var purposeType by remember { state.purposeTypeState }
     var purposeText by remember { state.purposeTextState }
-    Row(
+    var dropdownShown by remember { state.dropdownShownState }
+    ExposedDropdownMenuBox(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .padding(top = 24.dp)
-            .fillMaxWidth()
-            .height(50.dp)
-            .border(
-                width = 1.dp,
-                shape = RoundedCornerShape(8.dp),
-                color = colorScheme.primaryContainer,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .fillMaxWidth(),
+        expanded = dropdownShown,
+        onExpandedChange = {
+            dropdownShown = it
+        },
     ) {
-        Text(
+        Row(
             modifier = Modifier
-                .padding(all = 8.dp),
-            text = purposeType.stringResource().ifBlank {
-                stringResource(id = R.string.send_funds_purpose_hint)
-            },
-            color = if (purposeType == PurposeType.NONE) {
-                colorScheme.onPrimaryContainer
-            } else {
-                colorScheme.onBackground
-            },
-            textAlign = TextAlign.Center,
-            style = typography.bodyMedium,
-        )
-        Icon(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .size(12.dp),
-            painter = painterResource(id = R.drawable.icon_dropdown),
-            tint = colorScheme.tint(),
-            contentDescription = "",
-        )
+                .menuAnchor()
+                .height(50.dp)
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    shape = RoundedCornerShape(8.dp),
+                    color = colorScheme.primaryContainer,
+                )
+                .clickable {
+                    dropdownShown = true
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(all = 8.dp),
+                text = purposeType.stringResource().ifBlank {
+                    stringResource(id = R.string.send_funds_purpose_hint)
+                },
+                color = if (purposeType == PurposeType.NONE) {
+                    colorScheme.onPrimaryContainer
+                } else {
+                    colorScheme.onBackground
+                },
+                textAlign = TextAlign.Center,
+                style = typography.bodyMedium,
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(12.dp),
+                painter = painterResource(id = R.drawable.icon_dropdown),
+                tint = colorScheme.tint(),
+                contentDescription = "",
+            )
+        }
+
+        ExposedDropdownMenu(
+            modifier = Modifier.fillMaxWidth(),
+            expanded = dropdownShown,
+            onDismissRequest = { dropdownShown = false },
+        ) {
+            PurposeType.values().forEach { menuItemType ->
+                if (menuItemType != PurposeType.NONE) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                modifier = Modifier
+                                    .padding(all = 8.dp),
+                                text = menuItemType.stringResource(),
+                                color = if (purposeType == menuItemType) {
+                                    colorScheme.secondaryContainer
+                                } else {
+                                    colorScheme.onBackground
+                                },
+                                style = typography.bodyMedium,
+                            )
+                        },
+                        onClick = {
+                            purposeType = menuItemType
+                            dropdownShown = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
     }
     if (purposeType == PurposeType.NONE || purposeType == PurposeType.OTHER) {
         Row(
@@ -631,7 +687,6 @@ private fun PurposeFields(state: SendPageState) {
         }
     }
 }
-
 @Composable
 private fun PurposeType.stringResource(): String {
     return when (this) {
