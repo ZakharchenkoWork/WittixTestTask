@@ -86,107 +86,147 @@ fun SendPage(
 }
 
 @Composable
-private fun CurrencyDialog(state: CurrencyDialogState) {
-    if (state.isCurrencyDialogVisibleState) {
-        CurrencyPicker(
-            currencies = state.availableCurrencies,
-            chosenCurrency = state.chosenCurrencyState,
-            onCurrencyPicked = state.onCurrencyPicked,
-        )
-    }
+private fun Header(title: String) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth(),
+        text = title,
+        color = colorScheme.onBackground,
+        textAlign = TextAlign.Center,
+        style = typography.bodyMedium,
+    )
 }
 
 @Composable
-fun TransferButton(state: SendPageState) {
-    Button(
+private fun MainInfo(state: SendPageState) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = colorScheme.tertiaryContainer,
-        ),
-        onClick = state.onTransfer,
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(end = 16.dp),
-            text = stringResource(R.string.send_funds_transfer),
-            color = colorScheme.onTertiaryContainer,
-            fontWeight = FontWeight.Medium,
-            style = typography.bodyLarge,
-        )
-    }
-}
-
-@Composable
-fun SendingOptions(state: SendPageState) {
-    var isSaveBeneficiaryState by remember { state.isSaveBeneficiaryState }
-    var isAgreedState by remember { state.isAgreedState }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
+            .padding(all = 16.dp)
+            .border(
+                width = 1.dp,
+                shape = RoundedCornerShape(8.dp),
+                color = colorScheme.primaryContainer,
             ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            modifier = Modifier
-                .padding(end = 16.dp),
-            text = stringResource(R.string.send_funds_beneficiary),
-            color = colorScheme.primary,
-            style = typography.bodySmall,
+        AmountInputField(
+            title = stringResource(R.string.send_funds_field_title_send),
+            amountState = state.sendAmountState,
+            currencyState = state.sendCurrencyState,
+            onCurrencyClicked = { state.onCurrencyChangeRequsted(true) },
         )
-        CustomCheckbox(
-            modifier = Modifier.size(16.dp),
-            checked = isSaveBeneficiaryState,
-            onCheckedChange = { isSaveBeneficiaryState = it },
-            color = colorScheme.tertiaryContainer,
+        BalanceFields(state = state)
+        AmountInputField(
+            title = stringResource(R.string.send_funds_field_title_reveive),
+            amountState = state.receiveAmountState,
+            currencyState = state.receiveCurrencyState,
+            onCurrencyClicked = { state.onCurrencyChangeRequsted(false) },
         )
+        ReceiveFields(state = state)
+        ExchangeRatesHint()
+        TransferOptions(state = state)
+        AnimateTabs(state.isTransferRegularState.value) {
+            Column {
+                PurposeFields(state = state)
+            }
+        }
+
+        Documents(state = state)
     }
-    Divider(
+}
+
+@Composable
+private fun AmountInputField(
+    title: String,
+    amountState: MutableState<TextFieldValue>,
+    currencyState: MutableState<Currency>,
+    onCurrencyClicked: () -> Unit,
+) {
+    var sendAmountText by remember { amountState }
+    val sendCurrency by remember { currencyState }
+    Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
-            .padding(horizontal = 16.dp),
-        color = colorScheme.primaryContainer,
+            .padding(top = 24.dp, start = 12.dp),
+        text = title,
+        color = colorScheme.onPrimary,
+        style = typography.bodyMedium,
     )
     Row(
         modifier = Modifier
+            .padding(all = 12.dp)
             .fillMaxWidth()
-            .padding(top = 16.dp)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .height(50.dp)
+            .border(
+                width = 1.dp,
+                shape = RoundedCornerShape(8.dp),
+                color = colorScheme.secondaryContainer,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        DualStyleText(
+        BaseTextField(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .padding(end = 16.dp),
-            firstPart = stringResource(R.string.send_funds_agreement_text),
-            firstStyle = SpanStyle(
-                color = colorScheme.primary,
-                fontSize = typography.bodySmall.fontSize,
-            ),
-            secondPart = stringResource(
-                R.string.send_funds_agreement_more,
-            ),
-            secondStyle = SpanStyle(
-                color = colorScheme.secondaryContainer,
-                fontSize = typography.bodySmall.fontSize,
-                textDecoration = TextDecoration.Underline,
-            ),
-            textAlign = TextAlign.Justify,
-        )
-        CustomCheckbox(
+                .weight(0.7f)
+                .padding(all = 8.dp),
+            value = sendAmountText,
+            textStyle = typography.titleLarge,
+            color = colorScheme.onBackground,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            visualTransformation = MoneyTextTransformation(),
+            onValueChange = {
+                sendAmountText = it
+            },
+        ) {
+            Row(
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = stringResource(id = R.string.send_funds_amount),
+                    color = colorScheme.onPrimaryContainer,
+                    style = typography.bodyMedium,
+                )
+            }
+        }
+        Divider(
             modifier = Modifier
-                .size(16.dp),
-            checked = isAgreedState,
-            onCheckedChange = { isAgreedState = it },
-            color = colorScheme.tertiaryContainer,
+                .fillMaxHeight()
+                .width(1.dp)
+                .padding(vertical = 4.dp),
+            color = colorScheme.primaryContainer,
         )
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.3f)
+                .clickable { onCurrencyClicked() },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Image(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(20.dp),
+                painter = painterResource(id = sendCurrency.getFlag()),
+                contentDescription = "",
+            )
+            Text(
+                modifier = Modifier,
+                text = sendCurrency.currencyCode,
+                color = colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+                style = typography.bodyMedium,
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(12.dp),
+                painter = painterResource(id = R.drawable.icon_dropdown),
+                tint = colorScheme.tint(),
+                contentDescription = "",
+            )
+        }
     }
 }
 
@@ -201,7 +241,7 @@ private fun BalanceFields(state: SendPageState) {
         firstPart = stringResource(R.string.send_funds_balance),
         firstStyle = SpanStyle(
             color = colorScheme.onPrimary,
-            fontSize = typography.bodySmall.fontSize,
+            fontSize = typography.labelLarge.fontSize,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
@@ -210,7 +250,7 @@ private fun BalanceFields(state: SendPageState) {
         ),
         secondStyle = SpanStyle(
             color = colorScheme.onBackground,
-            fontSize = typography.bodySmall.fontSize,
+            fontSize = typography.labelLarge.fontSize,
         ),
         textAlign = TextAlign.Center,
     )
@@ -220,7 +260,7 @@ private fun BalanceFields(state: SendPageState) {
         firstPart = stringResource(R.string.send_funds_available_balance),
         firstStyle = SpanStyle(
             color = colorScheme.onPrimary,
-            fontSize = typography.bodySmall.fontSize,
+            fontSize = typography.labelLarge.fontSize,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
@@ -229,7 +269,7 @@ private fun BalanceFields(state: SendPageState) {
         ),
         secondStyle = SpanStyle(
             color = colorScheme.onBackground,
-            fontSize = typography.bodySmall.fontSize,
+            fontSize = typography.labelLarge.fontSize,
         ),
         textAlign = TextAlign.Center,
     )
@@ -247,7 +287,7 @@ private fun ReceiveFields(state: SendPageState) {
         text = stringResource(R.string.send_funds_exchange_label),
         color = colorScheme.onPrimary,
         textAlign = TextAlign.Center,
-        style = typography.bodySmall,
+        style = typography.labelLarge,
     )
     RatesText(
         firstCurrency = sendCurrency,
@@ -269,7 +309,7 @@ private fun ExchangeRatesHint() {
         text = stringResource(R.string.send_funds_exchange_rates_hint),
         color = colorScheme.onPrimary,
         textAlign = TextAlign.Justify,
-        style = typography.bodySmall,
+        style = typography.labelLarge,
     )
 }
 
@@ -375,223 +415,8 @@ private fun RatesText(
         ),
         color = colorScheme.onBackground,
         textAlign = TextAlign.Center,
-        style = typography.bodySmall,
+        style = typography.labelLarge,
     )
-}
-
-@Composable
-private fun Header(title: String) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = title,
-        color = colorScheme.onBackground,
-        textAlign = TextAlign.Center,
-        style = typography.bodySmall,
-    )
-}
-
-@Composable
-private fun MainInfo(state: SendPageState) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 16.dp)
-            .border(
-                width = 1.dp,
-                shape = RoundedCornerShape(8.dp),
-                color = colorScheme.primaryContainer,
-            ),
-    ) {
-        AmountInputField(
-            title = stringResource(R.string.send_funds_field_title_send),
-            amountState = state.sendAmountState,
-            currencyState = state.sendCurrencyState,
-            onCurrencyClicked = { state.onCurrencyChangeRequsted(true) },
-        )
-        BalanceFields(state = state)
-        AmountInputField(
-            title = stringResource(R.string.send_funds_field_title_reveive),
-            amountState = state.receiveAmountState,
-            currencyState = state.receiveCurrencyState,
-            onCurrencyClicked = { state.onCurrencyChangeRequsted(false) },
-        )
-        ReceiveFields(state = state)
-        ExchangeRatesHint()
-        TransferOptions(state = state)
-        AnimateTabs(state.isTransferRegularState.value) {
-            Column {
-                PurposeFields(state = state)
-            }
-        }
-
-        Documents(state = state)
-    }
-}
-
-@Composable
-private fun Documents(state: SendPageState) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp, start = 12.dp),
-        text = stringResource(R.string.send_funds_document_title),
-        color = colorScheme.onPrimary,
-        style = typography.bodyMedium,
-    )
-    Column(
-        modifier = Modifier
-            .padding(all = 12.dp)
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                shape = RoundedCornerShape(8.dp),
-                color = colorScheme.tertiaryContainer,
-            )
-            .clickable { state.onDocumentRequsted() },
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(top = 12.dp)
-                .background(
-                    color = colorScheme.tertiary,
-                    shape = RoundedCornerShape(8.dp),
-                ),
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(16.dp),
-                painter = painterResource(id = R.drawable.icon_document),
-                tint = colorScheme.tertiaryContainer,
-                contentDescription = "",
-            )
-        }
-        Text(
-            modifier = Modifier
-                .padding(top = 4.dp),
-            text = stringResource(R.string.send_funds_document_upload),
-            color = colorScheme.onBackground,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
-            style = typography.bodySmall,
-        )
-        Text(
-            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
-            text = stringResource(R.string.send_funds_document_types),
-            color = colorScheme.primary,
-            textAlign = TextAlign.Center,
-            style = typography.bodySmall,
-        )
-    }
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                top = 8.dp,
-                bottom = 20.dp,
-                start = 12.dp,
-            ),
-        text = stringResource(R.string.send_funds_document_hint),
-        color = colorScheme.primary,
-        style = typography.bodySmall,
-    )
-}
-
-@Composable
-private fun AmountInputField(
-    title: String,
-    amountState: MutableState<TextFieldValue>,
-    currencyState: MutableState<Currency>,
-    onCurrencyClicked: () -> Unit,
-) {
-    var sendAmountText by remember { amountState }
-    val sendCurrency by remember { currencyState }
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp, start = 12.dp),
-        text = title,
-        color = colorScheme.onPrimary,
-        style = typography.bodyMedium,
-    )
-    Row(
-        modifier = Modifier
-            .padding(all = 12.dp)
-            .fillMaxWidth()
-            .height(50.dp)
-            .border(
-                width = 1.dp,
-                shape = RoundedCornerShape(8.dp),
-                color = colorScheme.secondaryContainer,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BaseTextField(
-            modifier = Modifier
-                .weight(0.7f)
-                .padding(all = 8.dp),
-            value = sendAmountText,
-            textStyle = typography.titleLarge,
-            color = colorScheme.onBackground,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            visualTransformation = MoneyTextTransformation(),
-            onValueChange = {
-                sendAmountText = it
-            },
-        ) {
-            Row(
-                modifier = Modifier.fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    modifier = Modifier,
-                    text = stringResource(id = R.string.send_funds_amount),
-                    color = colorScheme.onPrimaryContainer,
-                    style = typography.bodyMedium,
-                )
-            }
-        }
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-                .padding(vertical = 4.dp),
-            color = colorScheme.primaryContainer,
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(0.3f)
-                .clickable { onCurrencyClicked() },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(20.dp),
-                painter = painterResource(id = sendCurrency.getFlag()),
-                contentDescription = "",
-            )
-            Text(
-                modifier = Modifier,
-                text = sendCurrency.currencyCode,
-                color = colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                style = typography.bodySmall,
-            )
-            Icon(
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(12.dp),
-                painter = painterResource(id = R.drawable.icon_dropdown),
-                tint = colorScheme.tint(),
-                contentDescription = "",
-            )
-        }
-    }
 }
 
 @Composable
@@ -721,6 +546,180 @@ private fun PurposeFields(state: SendPageState) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Documents(state: SendPageState) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp, start = 12.dp),
+        text = stringResource(R.string.send_funds_document_title),
+        color = colorScheme.onPrimary,
+        style = typography.bodyMedium,
+    )
+    Column(
+        modifier = Modifier
+            .padding(all = 12.dp)
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                shape = RoundedCornerShape(8.dp),
+                color = colorScheme.tertiaryContainer,
+            )
+            .clickable { state.onDocumentRequsted() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .background(
+                    color = colorScheme.tertiary,
+                    shape = RoundedCornerShape(8.dp),
+                ),
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(16.dp),
+                painter = painterResource(id = R.drawable.icon_document),
+                tint = colorScheme.tertiaryContainer,
+                contentDescription = "",
+            )
+        }
+        Text(
+            modifier = Modifier
+                .padding(top = 4.dp),
+            text = stringResource(R.string.send_funds_document_upload),
+            color = colorScheme.onBackground,
+            textAlign = TextAlign.Center,
+            style = typography.bodySmall,
+        )
+        Text(
+            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+            text = stringResource(R.string.send_funds_document_types),
+            color = colorScheme.primary,
+            textAlign = TextAlign.Center,
+            style = typography.labelLarge,
+        )
+    }
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = 8.dp,
+                bottom = 20.dp,
+                start = 12.dp,
+            ),
+        text = stringResource(R.string.send_funds_document_hint),
+        color = colorScheme.primary,
+        style = typography.labelLarge,
+    )
+}
+
+@Composable
+fun SendingOptions(state: SendPageState) {
+    var isSaveBeneficiaryState by remember { state.isSaveBeneficiaryState }
+    var isAgreedState by remember { state.isAgreedState }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(end = 16.dp),
+            text = stringResource(R.string.send_funds_beneficiary),
+            color = colorScheme.primary,
+            style = typography.labelLarge,
+        )
+        CustomCheckbox(
+            modifier = Modifier.size(16.dp),
+            checked = isSaveBeneficiaryState,
+            onCheckedChange = { isSaveBeneficiaryState = it },
+            color = colorScheme.tertiaryContainer,
+        )
+    }
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+            .padding(horizontal = 16.dp),
+        color = colorScheme.primaryContainer,
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        DualStyleText(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(end = 16.dp),
+            firstPart = stringResource(R.string.send_funds_agreement_text),
+            firstStyle = SpanStyle(
+                color = colorScheme.primary,
+                fontSize = typography.labelLarge.fontSize,
+            ),
+            secondPart = stringResource(
+                R.string.send_funds_agreement_more,
+            ),
+            secondStyle = SpanStyle(
+                color = colorScheme.secondaryContainer,
+                fontSize = typography.labelLarge.fontSize,
+                textDecoration = TextDecoration.Underline,
+            ),
+            textAlign = TextAlign.Justify,
+        )
+        CustomCheckbox(
+            modifier = Modifier
+                .size(16.dp),
+            checked = isAgreedState,
+            onCheckedChange = { isAgreedState = it },
+            color = colorScheme.tertiaryContainer,
+        )
+    }
+}
+
+@Composable
+fun TransferButton(state: SendPageState) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorScheme.tertiaryContainer,
+        ),
+        onClick = state.onTransfer,
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(end = 16.dp),
+            text = stringResource(R.string.send_funds_transfer),
+            color = colorScheme.onTertiaryContainer,
+            fontWeight = FontWeight.Medium,
+            style = typography.titleSmall,
+        )
+    }
+}
+
+@Composable
+private fun CurrencyDialog(state: CurrencyDialogState) {
+    if (state.isCurrencyDialogVisibleState) {
+        CurrencyPicker(
+            currencies = state.availableCurrencies,
+            chosenCurrency = state.chosenCurrencyState,
+            onCurrencyPicked = state.onCurrencyPicked,
+        )
     }
 }
 

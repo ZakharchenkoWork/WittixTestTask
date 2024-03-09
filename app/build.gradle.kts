@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-text-google-fonts")
     implementation("androidx.compose.material:material:1.6.3")
     implementation("io.insert-koin:koin-androidx-compose-navigation:3.4.5")
     implementation("com.chargemap.compose:numberpicker:1.0.3")

@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.faigenbloom.testtask.ui.common.WittixBottomNavigationBar
 import com.faigenbloom.testtask.ui.common.WittixFloatingActionButton
 import com.faigenbloom.testtask.ui.send.SendPageRoute
 import com.faigenbloom.testtask.ui.send.sendPage

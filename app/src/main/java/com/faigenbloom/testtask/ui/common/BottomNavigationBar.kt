@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.faigenbloom.testtask
+package com.faigenbloom.testtask.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -28,9 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.faigenbloom.testtask.ui.common.CutOutShape
-import com.faigenbloom.testtask.ui.common.WittixFloatingActionButton
-import com.faigenbloom.testtask.ui.common.topShadow
+import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.send.SendPageRoute
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 

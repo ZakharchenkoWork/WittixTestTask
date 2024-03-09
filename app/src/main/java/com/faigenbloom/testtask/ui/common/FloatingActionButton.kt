@@ -19,14 +19,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.faigenbloom.testtask.WittixBottomNavigationBar
 import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import com.faigenbloom.testtask.ui.theme.fabGradientList
 
 @Composable
 fun WittixFloatingActionButton(
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
 ) {
     val size = 60.dp
     val sizePx = with(LocalDensity.current) { size.toPx() }
@@ -43,7 +42,7 @@ fun WittixFloatingActionButton(
                     center = Offset(gradientOffsetX, gradientOffsetY),
                     radius = gradientRadius,
                 ),
-            ).clickable {onClicked() },
+            ).clickable { onClicked() },
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -57,7 +56,7 @@ fun WittixFloatingActionButton(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Preview
 @Composable
-fun NavBarPreview() {
+fun FloatingActionButtonPreview() {
     TestTaskTheme {
         Scaffold(
             bottomBar = {
@@ -70,7 +69,7 @@ fun NavBarPreview() {
             isFloatingActionButtonDocked = true,
             floatingActionButton = {
                 WittixFloatingActionButton(
-                    onClicked = {}
+                    onClicked = {},
                 )
             },
         ) {
