@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -89,6 +88,7 @@ fun SendPage(
 private fun Header(title: String) {
     Text(
         modifier = Modifier
+            .padding(top = 6.dp)
             .fillMaxWidth(),
         text = title,
         color = colorScheme.onBackground,
@@ -102,7 +102,7 @@ private fun MainInfo(state: SendPageState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = 16.dp)
+            .padding(all = 20.dp)
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
@@ -147,16 +147,16 @@ private fun AmountInputField(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp, start = 12.dp),
+            .padding(top = 26.dp, start = 13.dp),
         text = title,
         color = colorScheme.onPrimary,
         style = typography.bodyMedium,
     )
     Row(
         modifier = Modifier
-            .padding(all = 12.dp)
+            .padding(all = 13.dp)
             .fillMaxWidth()
-            .height(50.dp)
+            .height(64.dp)
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
@@ -166,7 +166,7 @@ private fun AmountInputField(
     ) {
         BaseTextField(
             modifier = Modifier
-                .weight(0.7f)
+                .weight(0.6f)
                 .padding(all = 8.dp),
             value = sendAmountText,
             textStyle = typography.titleLarge,
@@ -193,7 +193,7 @@ private fun AmountInputField(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp)
-                .padding(vertical = 4.dp),
+                .padding(vertical = 7.dp),
             color = colorScheme.primaryContainer,
         )
         Row(
@@ -206,8 +206,8 @@ private fun AmountInputField(
         ) {
             Image(
                 modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(20.dp),
+                    .padding(start = 11.dp)
+                    .size(24.dp),
                 painter = painterResource(id = sendCurrency.getFlag()),
                 contentDescription = "",
             )
@@ -220,8 +220,8 @@ private fun AmountInputField(
             )
             Icon(
                 modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(12.dp),
+                    .padding(end = 20.dp)
+                    .size(16.dp),
                 painter = painterResource(id = R.drawable.icon_dropdown),
                 tint = colorScheme.tint(),
                 contentDescription = "",
@@ -239,18 +239,16 @@ private fun BalanceFields(state: SendPageState) {
         modifier = Modifier
             .fillMaxWidth(),
         firstPart = stringResource(R.string.send_funds_balance),
-        firstStyle = SpanStyle(
+        firstStyle = typography.labelLarge.toSpanStyle().copy(
             color = colorScheme.onPrimary,
-            fontSize = typography.labelLarge.fontSize,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
             MoneyTextTransformation().format(balanceText),
         ),
-        secondStyle = SpanStyle(
+        secondStyle = typography.labelLarge.toSpanStyle().copy(
             color = colorScheme.onBackground,
-            fontSize = typography.labelLarge.fontSize,
         ),
         textAlign = TextAlign.Center,
     )
@@ -258,18 +256,16 @@ private fun BalanceFields(state: SendPageState) {
         modifier = Modifier
             .fillMaxWidth(),
         firstPart = stringResource(R.string.send_funds_available_balance),
-        firstStyle = SpanStyle(
+        firstStyle = typography.labelLarge.toSpanStyle().copy(
             color = colorScheme.onPrimary,
-            fontSize = typography.labelLarge.fontSize,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
             MoneyTextTransformation().format(availableBalanceText),
         ),
-        secondStyle = SpanStyle(
+        secondStyle = typography.labelLarge.toSpanStyle().copy(
             color = colorScheme.onBackground,
-            fontSize = typography.labelLarge.fontSize,
         ),
         textAlign = TextAlign.Center,
     )
@@ -323,7 +319,7 @@ private fun TransferOptions(state: SendPageState) {
             .fillMaxWidth()
             .padding(
                 top = 24.dp,
-                start = 12.dp,
+                start = 13.dp,
             ),
         text = stringResource(id = R.string.send_funds_transfer_options_title),
         color = colorScheme.onBackground,
@@ -332,8 +328,8 @@ private fun TransferOptions(state: SendPageState) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(all = 13.dp),
+        horizontalArrangement = Arrangement.spacedBy(13.dp),
     ) {
         OptionButton(
             modifier = Modifier
@@ -426,7 +422,7 @@ private fun PurposeFields(state: SendPageState) {
     var dropdownShown by remember { state.dropdownShownState }
     ExposedDropdownMenuBox(
         modifier = Modifier
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 13.dp)
             .padding(top = 24.dp)
             .fillMaxWidth(),
         expanded = dropdownShown,
@@ -467,7 +463,7 @@ private fun PurposeFields(state: SendPageState) {
             Icon(
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .size(12.dp),
+                    .size(16.dp),
                 painter = painterResource(id = R.drawable.icon_dropdown),
                 tint = colorScheme.tint(),
                 contentDescription = "",
@@ -511,8 +507,8 @@ private fun PurposeFields(state: SendPageState) {
         if (isVisible) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 4.dp)
+                    .padding(horizontal = 13.dp)
+                    .padding(top = 7.dp)
                     .fillMaxWidth()
                     .height(50.dp)
                     .border(
@@ -554,14 +550,14 @@ private fun Documents(state: SendPageState) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp, start = 12.dp),
+            .padding(top = 24.dp, start = 13.dp),
         text = stringResource(R.string.send_funds_document_title),
         color = colorScheme.onPrimary,
         style = typography.bodyMedium,
     )
     Column(
         modifier = Modifier
-            .padding(all = 12.dp)
+            .padding(all = 13.dp)
             .fillMaxWidth()
             .border(
                 width = 1.dp,
@@ -573,7 +569,7 @@ private fun Documents(state: SendPageState) {
     ) {
         Box(
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = 13.dp)
                 .background(
                     color = colorScheme.tertiary,
                     shape = RoundedCornerShape(8.dp),
@@ -597,7 +593,7 @@ private fun Documents(state: SendPageState) {
             style = typography.bodySmall,
         )
         Text(
-            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+            modifier = Modifier.padding(top = 13.dp, bottom = 13.dp),
             text = stringResource(R.string.send_funds_document_types),
             color = colorScheme.primary,
             textAlign = TextAlign.Center,
@@ -610,7 +606,7 @@ private fun Documents(state: SendPageState) {
             .padding(
                 top = 8.dp,
                 bottom = 20.dp,
-                start = 12.dp,
+                start = 13.dp,
             ),
         text = stringResource(R.string.send_funds_document_hint),
         color = colorScheme.primary,
@@ -665,16 +661,14 @@ fun SendingOptions(state: SendPageState) {
                 .fillMaxWidth(0.95f)
                 .padding(end = 16.dp),
             firstPart = stringResource(R.string.send_funds_agreement_text),
-            firstStyle = SpanStyle(
+            firstStyle = typography.labelLarge.toSpanStyle().copy(
                 color = colorScheme.primary,
-                fontSize = typography.labelLarge.fontSize,
             ),
             secondPart = stringResource(
                 R.string.send_funds_agreement_more,
             ),
-            secondStyle = SpanStyle(
+            secondStyle = typography.labelLarge.toSpanStyle().copy(
                 color = colorScheme.secondaryContainer,
-                fontSize = typography.labelLarge.fontSize,
                 textDecoration = TextDecoration.Underline,
             ),
             textAlign = TextAlign.Justify,
@@ -694,7 +688,8 @@ fun TransferButton(state: SendPageState) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .height(50.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorScheme.tertiaryContainer,
@@ -750,14 +745,14 @@ private fun SendPagePreview() {
         Surface {
             SendPage(
                 state = SendPageState(
-                    sendAmountState = remember { mutableStateOf(TextFieldValue("100,000")) },
+                    sendAmountState = remember { mutableStateOf(TextFieldValue("100000.00")) },
                     sendCurrencyState = remember { mutableStateOf(Currency.getInstance(EUR)) },
-                    receiveAmountState = remember { mutableStateOf(TextFieldValue("358,521.13")) },
+                    receiveAmountState = remember { mutableStateOf(TextFieldValue("358521.13")) },
                     receiveCurrencyState = remember { mutableStateOf(Currency.getInstance(ILS)) },
-                    balanceState = remember { mutableStateOf("2,340.00") },
-                    availableBalanceState = remember { mutableStateOf("1,700.50") },
+                    balanceState = remember { mutableStateOf("2340.00") },
+                    availableBalanceState = remember { mutableStateOf("1700.50") },
                     exchangeRateState = remember { mutableStateOf("3.61206") },
-                    reverseExchangeRateState = remember { mutableStateOf("0,28") },
+                    reverseExchangeRateState = remember { mutableStateOf("0.28") },
                     isTransferRegularState = remember { mutableStateOf(false) },
                     expressPriceAmount = remember { mutableStateOf("50") },
                     purposeTypeState = remember { mutableStateOf(PurposeType.NONE) },

@@ -21,7 +21,10 @@ import com.faigenbloom.testtask.R
 fun TopBar(title: String) {
     Box(
         modifier = Modifier
-            .padding(all = 16.dp)
+            .padding(
+                vertical = 24.dp,
+                horizontal = 20.dp,
+            )
             .fillMaxWidth(),
     ) {
         Row(
@@ -30,7 +33,7 @@ fun TopBar(title: String) {
         ) {
             Icon(
                 modifier = Modifier
-                    .height(10.dp),
+                    .height(16.dp),
                 painter = painterResource(R.drawable.icon_back),
                 contentDescription = "",
                 tint = MaterialTheme.colorScheme.onBackground,
