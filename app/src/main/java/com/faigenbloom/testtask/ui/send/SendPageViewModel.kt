@@ -50,8 +50,41 @@ class SendPageViewModel(
         onDocumentPickerRequested()
     }
 
-    private fun onTransfer() {
-        onTransfer()
+    private fun checkPurposeError(): Boolean {
+        val purposeType = state.purposeTypeState.value
+        val purposeText = state.purposeTextState.value.text
+        return purposeType == PurposeType.NONE ||
+            (
+                purposeType == PurposeType.OTHER &&
+                    purposeText.isBlank()
+                )
+    }
+
+    private fun onTransferRequseted() {
+        viewModelScope.launch {
+            recalculateAmount(isLastChangedAmountWasSend)
+            if (state.sendAmountState.value.text.isNotBlank() && state.sendErrorState.value.not()) {
+                if (checkPurposeError().not()) {
+                    if (state.isAgreedState.value) {
+                        _stateFlow.update {
+                            it.copy(
+                                successState = it.successState.copy(
+                                    isShown = true,
+                                ),
+                            )
+                        }
+                        onTransfer()
+                    } else {
+                        state.isAgreedErrorState.value = true
+                    }
+                } else {
+                    state.purposeErrorState.value = true
+                }
+            } else {
+                state.sendErrorState.value = true
+                state.animateErrorState.value = true
+            }
+        }
     }
 
     private fun onCurrencyChangeRequsted(isForSend: Boolean) {
@@ -87,52 +120,78 @@ class SendPageViewModel(
         }
         viewModelScope.launch {
             updateCurrencies()
+            recalculateAmount(isLastChangedAmountWasSend)
+            state.animateErrorState.value = state.sendErrorState.value
         }
     }
 
     private fun onAmountChanged(isForSend: Boolean) {
         isLastChangedAmountWasSend = isForSend
         viewModelScope.launch {
-            val fieldToCalculate = if (isForSend) {
-                state.receiveAmountState
-            } else {
-                state.sendAmountState
-            }
-            val changedField = if (isForSend) {
-                state.sendAmountState
-            } else {
-                state.receiveAmountState
-            }
-            val enteredAmount = changedField.value.text
-            val exchangeRate = if (isForSend) {
-                state.exchangeRateState.value
-            } else {
-                state.reverseExchangeRateState.value
-            }
-            val transferPrice = if (state.isTransferRegularState.value.not()) {
-                state.expressPriceAmount.value
-            } else {
-                NO_AMOUNT_VALUE
-            }
+            recalculateAmount(isForSend)
+        }
+    }
 
-            fieldToCalculate.value = TextFieldValue(
-                if (enteredAmount.isNotBlank()) {
-                    val calculatedAmount = calculateTransferAmountUseCase(
-                        isForSend = isForSend,
-                        amount = enteredAmount,
-                        rate = exchangeRate,
-                        transferPrice = transferPrice,
-                    )
-                    if (calculatedAmount.contains("-").not()) {
-                        calculatedAmount
-                    } else {
-                        NO_AMOUNT_VALUE
-                    }
-                } else {
-                    NO_AMOUNT_VALUE
-                },
+    private fun onTransferOptionsChanged() {
+        viewModelScope.launch {
+            recalculateAmount(isLastChangedAmountWasSend)
+            state.animateErrorState.value = state.sendErrorState.value
+        }
+    }
+
+    private fun onHideSuccess() {
+        _stateFlow.update {
+            it.copy(
+                successState = it.successState.copy(
+                    isShown = false,
+                ),
             )
         }
+    }
+
+    private suspend fun recalculateAmount(isForSend: Boolean) {
+        val fieldToCalculate = if (isForSend) {
+            state.receiveAmountState
+        } else {
+            state.sendAmountState
+        }
+        val changedField = if (isForSend) {
+            state.sendAmountState
+        } else {
+            state.receiveAmountState
+        }
+        val enteredAmount = changedField.value.text
+        val exchangeRate = if (isForSend) {
+            state.exchangeRateState.value
+        } else {
+            state.reverseExchangeRateState.value
+        }
+        val transferPrice = if (state.isTransferRegularState.value.not()) {
+            state.expressPriceAmount.value
+        } else {
+            NO_AMOUNT_VALUE
+        }
+
+        fieldToCalculate.value = TextFieldValue(
+            if (enteredAmount.isNotBlank()) {
+                val calculatedAmount = calculateTransferAmountUseCase(
+                    isForSend = isForSend,
+                    amount = enteredAmount,
+                    rate = exchangeRate,
+                    transferPrice = transferPrice,
+                )
+                if (calculatedAmount.contains("-").not()) {
+                    state.sendErrorState.value = false
+                    calculatedAmount
+                } else {
+                    state.sendErrorState.value = true
+                    NO_AMOUNT_VALUE
+                }
+            } else {
+                state.sendErrorState.value = false
+                NO_AMOUNT_VALUE
+            },
+        )
     }
 
     private suspend fun updateCurrenciesInDialog() {
@@ -169,16 +228,6 @@ class SendPageViewModel(
         state.reverseExchangeRateState.value = exchangeRates.to
     }
 
-    private fun onHideSuccess() {
-        _stateFlow.update {
-            it.copy(
-                successState = it.successState.copy(
-                    isShown = false,
-                ),
-            )
-        }
-    }
-
     private val state: SendPageState
         get() = _stateFlow.value
     private val _stateFlow = MutableStateFlow(
@@ -190,11 +239,11 @@ class SendPageViewModel(
                 isShown = false,
                 onFinish = ::onHideSuccess,
             ),
-            onTransfer = ::onTransfer,
+            onTransfer = ::onTransferRequseted,
             onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
             onDocumentRequsted = ::onDocumentPicker,
             onAmountChanged = ::onAmountChanged,
-            onTransferOptionsChanged = { onAmountChanged(isLastChangedAmountWasSend) },
+            onTransferOptionsChanged = ::onTransferOptionsChanged,
         ),
     )
     val stateFlow = _stateFlow.asStateFlow()
@@ -217,6 +266,8 @@ data class SendPageState(
     val successState: AnimationState = AnimationState(),
     val sendAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
+    val sendErrorState: MutableState<Boolean> = mutableStateOf(false),
+    val animateErrorState: MutableState<Boolean> = mutableStateOf(false),
     val receiveAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val receiveCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
     val balanceState: MutableState<String> = mutableStateOf(""),
@@ -227,9 +278,11 @@ data class SendPageState(
     val expressPriceAmount: MutableState<String> = mutableStateOf(""),
     val purposeTypeState: MutableState<PurposeType> = mutableStateOf(PurposeType.NONE),
     val purposeTextState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
+    val purposeErrorState: MutableState<Boolean> = mutableStateOf(false),
     val dropdownShownState: MutableState<Boolean> = mutableStateOf(false),
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
+    val isAgreedErrorState: MutableState<Boolean> = mutableStateOf(false),
     val onCurrencyChangeRequsted: (isForSend: Boolean) -> Unit = {},
     val onAmountChanged: (isForSend: Boolean) -> Unit = {},
     val onTransferOptionsChanged: () -> Unit = {},

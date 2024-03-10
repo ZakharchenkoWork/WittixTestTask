@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -19,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
 
 @Composable
-fun CustomCheckbox(
-    modifier: Modifier = Modifier.size(16.dp),
+fun WittixCheckbox(
+    modifier: Modifier = Modifier,
     checked: Boolean = true,
     onCheckedChange: (Boolean) -> Unit = {},
     color: Color,

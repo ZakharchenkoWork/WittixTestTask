@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -32,13 +33,16 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,10 +54,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
 import com.faigenbloom.testtask.ui.common.CurrencyPicker
-import com.faigenbloom.testtask.ui.common.CustomCheckbox
 import com.faigenbloom.testtask.ui.common.EUR
 import com.faigenbloom.testtask.ui.common.ILS
 import com.faigenbloom.testtask.ui.common.TopBar
+import com.faigenbloom.testtask.ui.common.WittixCheckbox
 import com.faigenbloom.testtask.ui.common.animations.AnimateTabs
 import com.faigenbloom.testtask.ui.common.animations.AnimatedVisibility
 import com.faigenbloom.testtask.ui.common.animations.Success
@@ -63,6 +67,7 @@ import com.faigenbloom.testtask.ui.common.text.DualStyleText
 import com.faigenbloom.testtask.ui.common.text.MoneyTextTransformation
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import com.faigenbloom.testtask.ui.theme.tint
+import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
@@ -71,7 +76,22 @@ fun SendPage(
     modifier: Modifier = Modifier,
     state: SendPageState,
 ) {
-    LazyColumn(modifier = modifier) {
+    val listState = rememberLazyListState()
+    var sendErrorState by remember { state.animateErrorState }
+    val coroutineScope = rememberCoroutineScope()
+    if (sendErrorState) {
+        LaunchedEffect("ScrollAnimationKey") {
+            coroutineScope.launch {
+                listState.animateScrollToItem(0, 0)
+                sendErrorState = false
+            }
+        }
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = modifier,
+    ) {
         item {
             TopBar(stringResource(R.string.send_funds_title))
             Header(stringResource(R.string.send_funds_header))
@@ -113,6 +133,7 @@ private fun MainInfo(state: SendPageState) {
             title = stringResource(R.string.send_funds_field_title_send),
             amountState = state.sendAmountState,
             currencyState = state.sendCurrencyState,
+            errorState = state.sendErrorState,
             onCurrencyClicked = { state.onCurrencyChangeRequsted(true) },
             onAmountChanged = { state.onAmountChanged(true) },
         )
@@ -142,11 +163,13 @@ private fun AmountInputField(
     title: String,
     amountState: MutableState<TextFieldValue>,
     currencyState: MutableState<Currency>,
+    errorState: MutableState<Boolean>? = null,
     onCurrencyClicked: () -> Unit,
     onAmountChanged: () -> Unit,
 ) {
     var sendAmountText by remember { amountState }
     val sendCurrency by remember { currencyState }
+    val isError by remember { errorState ?: mutableStateOf(false) }
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -163,7 +186,10 @@ private fun AmountInputField(
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
-                color = colorScheme.secondaryContainer,
+                color = containerColor(
+                    isError = isError,
+                    isChecked = sendAmountText.text.isNotBlank(),
+                ),
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -173,7 +199,11 @@ private fun AmountInputField(
                 .padding(all = 8.dp),
             value = sendAmountText,
             textStyle = typography.titleLarge,
-            color = colorScheme.onBackground,
+            color = if (isError.not()) {
+                colorScheme.onBackground
+            } else {
+                colorScheme.onError
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             visualTransformation = MoneyTextTransformation(),
             onValueChange = {
@@ -430,6 +460,7 @@ private fun PurposeFields(state: SendPageState) {
     var purposeType by remember { state.purposeTypeState }
     var purposeText by remember { state.purposeTextState }
     var dropdownShown by remember { state.dropdownShownState }
+    var isError by remember { state.purposeErrorState }
     ExposedDropdownMenuBox(
         modifier = Modifier
             .padding(horizontal = 13.dp)
@@ -448,7 +479,10 @@ private fun PurposeFields(state: SendPageState) {
                 .border(
                     width = 1.dp,
                     shape = RoundedCornerShape(8.dp),
-                    color = colorScheme.primaryContainer,
+                    color = containerColor(
+                        isError = isError,
+                        isChecked = purposeType != PurposeType.NONE,
+                    ),
                 )
                 .clickable {
                     dropdownShown = true
@@ -504,6 +538,7 @@ private fun PurposeFields(state: SendPageState) {
                         onClick = {
                             purposeType = menuItemType
                             dropdownShown = false
+                            isError = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     )
@@ -524,7 +559,12 @@ private fun PurposeFields(state: SendPageState) {
                     .border(
                         width = 1.dp,
                         shape = RoundedCornerShape(8.dp),
-                        color = colorScheme.primaryContainer,
+                        color = containerColor(
+                            isError = isError,
+                            isChecked = purposeText.text
+                                .isBlank()
+                                .not(),
+                        ),
                     ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -536,7 +576,10 @@ private fun PurposeFields(state: SendPageState) {
                     value = purposeText,
                     textStyle = typography.titleLarge,
                     color = colorScheme.onBackground,
-                    onValueChange = { purposeText = it },
+                    onValueChange = {
+                        purposeText = it
+                        isError = false
+                    },
                 ) {
                     Row(
                         modifier = Modifier.fillMaxHeight(),
@@ -552,6 +595,19 @@ private fun PurposeFields(state: SendPageState) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun containerColor(isError: Boolean, isChecked: Boolean): Color {
+    return if (isError.not()) {
+        if (isChecked) {
+            colorScheme.secondaryContainer
+        } else {
+            colorScheme.primaryContainer
+        }
+    } else {
+        colorScheme.error
     }
 }
 
@@ -628,6 +684,7 @@ private fun Documents(state: SendPageState) {
 fun SendingOptions(state: SendPageState) {
     var isSaveBeneficiaryState by remember { state.isSaveBeneficiaryState }
     var isAgreedState by remember { state.isAgreedState }
+    var isAgreedError by remember { state.isAgreedErrorState }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -644,7 +701,7 @@ fun SendingOptions(state: SendPageState) {
             color = colorScheme.primary,
             style = typography.labelLarge,
         )
-        CustomCheckbox(
+        WittixCheckbox(
             modifier = Modifier.size(16.dp),
             checked = isSaveBeneficiaryState,
             onCheckedChange = { isSaveBeneficiaryState = it },
@@ -683,12 +740,19 @@ fun SendingOptions(state: SendPageState) {
             ),
             textAlign = TextAlign.Justify,
         )
-        CustomCheckbox(
+        WittixCheckbox(
             modifier = Modifier
                 .size(16.dp),
             checked = isAgreedState,
-            onCheckedChange = { isAgreedState = it },
-            color = colorScheme.tertiaryContainer,
+            onCheckedChange = {
+                isAgreedState = it
+                isAgreedError = isAgreedError && it.not()
+            },
+            color = if (isAgreedError.not()) {
+                colorScheme.tertiaryContainer
+            } else {
+                colorScheme.error
+            },
         )
     }
 }
