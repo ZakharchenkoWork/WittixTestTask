@@ -83,8 +83,8 @@ class SendPageViewModel(
                         ),
                     )
                 }
-                state.isLoadingState.value = false
             }
+            state.isLoadingState.value = false
         }
     }
 

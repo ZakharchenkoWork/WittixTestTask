@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,8 +44,8 @@ fun TransferOptions(state: SendPageState) {
                 start = 13.dp,
             ),
         text = stringResource(id = R.string.send_funds_transfer_options_title),
-        color = MaterialTheme.colorScheme.onBackground,
-        style = MaterialTheme.typography.bodyMedium,
+        color = colorScheme.onBackground,
+        style = typography.bodyMedium,
     )
     Row(
         modifier = Modifier
@@ -96,9 +97,9 @@ private fun OptionButton(
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
                 color = if (isChecked) {
-                    MaterialTheme.colorScheme.secondaryContainer
+                    colorScheme.secondaryContainer
                 } else {
-                    MaterialTheme.colorScheme.primaryContainer
+                    colorScheme.primaryContainer
                 },
             )
             .clickable(onClick = onClick),
@@ -109,12 +110,12 @@ private fun OptionButton(
                 .fillMaxWidth(),
             text = text,
             color = if (isChecked) {
-                MaterialTheme.colorScheme.secondaryContainer
+                colorScheme.secondaryContainer
             } else {
-                MaterialTheme.colorScheme.onBackground
+                colorScheme.onBackground
             },
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
+            style = typography.bodyMedium,
         )
     }
 }

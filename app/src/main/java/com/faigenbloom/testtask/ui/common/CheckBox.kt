@@ -3,10 +3,13 @@ package com.faigenbloom.testtask.ui.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +37,17 @@ fun WittixCheckbox(
                 color = color,
             )
             .background(Color.Transparent)
-            .clickable {
-                onCheckedChange(checkBoxState.value.not())
-                checkBoxState.value = checkBoxState.value.not()
-            },
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = false,
+                    color = colorScheme.tertiaryContainer
+                ),
+                onClick = {
+                    onCheckedChange(checkBoxState.value.not())
+                    checkBoxState.value = checkBoxState.value.not()
+                }
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (checkBoxState.value) {

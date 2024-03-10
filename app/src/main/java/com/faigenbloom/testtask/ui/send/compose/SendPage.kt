@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.faigenbloom.testtask.ui.send
+package com.faigenbloom.testtask.ui.send.compose
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,8 +36,9 @@ import com.faigenbloom.testtask.ui.common.ILS
 import com.faigenbloom.testtask.ui.common.TopBar
 import com.faigenbloom.testtask.ui.common.animations.Loading
 import com.faigenbloom.testtask.ui.common.animations.Success
-import com.faigenbloom.testtask.ui.send.compose.MainInfo
-import com.faigenbloom.testtask.ui.send.compose.SendingOptions
+import com.faigenbloom.testtask.ui.send.CurrencyDialogState
+import com.faigenbloom.testtask.ui.send.PurposeType
+import com.faigenbloom.testtask.ui.send.SendPageState
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 import kotlinx.coroutines.launch
 import java.util.Currency

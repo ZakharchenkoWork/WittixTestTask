@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,17 +44,17 @@ fun PlaceholderPage(
                 modifier = Modifier
                     .fillMaxWidth(),
                 text = stringResource(R.string.placeholder_title),
-                color = MaterialTheme.colorScheme.onError,
+                color = colorScheme.onError,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
+                style = typography.bodyLarge,
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
                 text = stringResource(R.string.placeholder_message_pre),
-                color = MaterialTheme.colorScheme.tertiary,
+                color = colorScheme.tertiary,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
+                style = typography.bodyLarge,
             )
             Text(
                 modifier = Modifier
@@ -61,9 +62,9 @@ fun PlaceholderPage(
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp),
                 text = stringResource(R.string.placeholder_message_first),
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 textAlign = TextAlign.Justify,
-                style = MaterialTheme.typography.bodyMedium,
+                style = typography.bodyMedium,
             )
 
             Text(
@@ -74,9 +75,9 @@ fun PlaceholderPage(
                         vertical = 16.dp,
                     ),
                 text = stringResource(R.string.placeholder_message_second),
-                color = MaterialTheme.colorScheme.secondary,
+                color = colorScheme.secondary,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
+                style = typography.titleLarge,
             )
 
             Text(
@@ -84,18 +85,18 @@ fun PlaceholderPage(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 text = stringResource(R.string.placeholder_message_third),
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 textAlign = TextAlign.Justify,
-                style = MaterialTheme.typography.bodyLarge,
+                style = typography.bodyLarge,
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 text = stringResource(R.string.placeholder_message_forth),
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 textAlign = TextAlign.Justify,
-                style = MaterialTheme.typography.bodyLarge,
+                style = typography.bodyLarge,
             )
             Row(
                 modifier = Modifier
@@ -117,19 +118,19 @@ fun PlaceholderPage(
                         modifier = Modifier
                             .fillMaxWidth(),
                         text = stringResource(R.string.placeholder_message_fifth),
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         textAlign = TextAlign.End,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = typography.bodyLarge,
                     )
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onNameClicked() },
                         text = stringResource(R.string.placeholder_developer),
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = colorScheme.secondary,
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.End,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = typography.bodyLarge,
                     )
                 }
             }

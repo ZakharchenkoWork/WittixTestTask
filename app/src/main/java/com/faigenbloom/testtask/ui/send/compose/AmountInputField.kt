@@ -16,7 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,8 +63,8 @@ fun AmountInputField(
             .fillMaxWidth()
             .padding(top = 26.dp, start = 13.dp),
         text = title,
-        color = MaterialTheme.colorScheme.onPrimary,
-        style = MaterialTheme.typography.bodyMedium,
+        color = colorScheme.onPrimary,
+        style = typography.bodyMedium,
     )
     Row(
         modifier = Modifier
@@ -85,11 +86,11 @@ fun AmountInputField(
                 .weight(0.6f)
                 .padding(all = 8.dp),
             value = sendAmountText,
-            textStyle = MaterialTheme.typography.titleLarge,
+            textStyle = typography.titleLarge,
             color = if (isError.not()) {
-                MaterialTheme.colorScheme.onBackground
+                colorScheme.onBackground
             } else {
-                MaterialTheme.colorScheme.onError
+                colorScheme.onError
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             visualTransformation = MoneyTextTransformation(),
@@ -105,8 +106,8 @@ fun AmountInputField(
                 Text(
                     modifier = Modifier,
                     text = stringResource(id = R.string.send_funds_amount),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorScheme.onPrimaryContainer,
+                    style = typography.bodyMedium,
                 )
             }
         }
@@ -115,7 +116,7 @@ fun AmountInputField(
                 .fillMaxHeight()
                 .width(1.dp)
                 .padding(vertical = 7.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = colorScheme.primaryContainer,
         )
         Row(
             modifier = Modifier
@@ -135,16 +136,16 @@ fun AmountInputField(
             Text(
                 modifier = Modifier,
                 text = sendCurrency.currencyCode,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
+                style = typography.bodyMedium,
             )
             Icon(
                 modifier = Modifier
                     .padding(end = 20.dp)
                     .size(16.dp),
                 painter = painterResource(id = R.drawable.icon_dropdown),
-                tint = MaterialTheme.colorScheme.tint(),
+                tint = colorScheme.tint(),
                 contentDescription = "",
             )
         }

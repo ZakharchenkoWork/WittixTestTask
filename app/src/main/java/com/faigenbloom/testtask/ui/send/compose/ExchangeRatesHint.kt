@@ -3,7 +3,8 @@ package com.faigenbloom.testtask.ui.send.compose
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,9 +26,9 @@ fun ExchangeRatesHint() {
                 horizontal = 8.dp,
             ),
         text = stringResource(R.string.send_funds_exchange_rates_hint),
-        color = MaterialTheme.colorScheme.onPrimary,
+        color = colorScheme.onPrimary,
         textAlign = TextAlign.Justify,
-        style = MaterialTheme.typography.labelLarge,
+        style = typography.labelLarge,
     )
 }
 

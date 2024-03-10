@@ -14,7 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,8 +39,8 @@ fun Documents(state: SendPageState) {
             .fillMaxWidth()
             .padding(top = 24.dp, start = 13.dp),
         text = stringResource(R.string.send_funds_document_title),
-        color = MaterialTheme.colorScheme.onPrimary,
-        style = MaterialTheme.typography.bodyMedium,
+        color = colorScheme.onPrimary,
+        style = typography.bodyMedium,
     )
     Column(
         modifier = Modifier
@@ -48,7 +49,7 @@ fun Documents(state: SendPageState) {
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.tertiaryContainer,
+                color = colorScheme.tertiaryContainer,
             )
             .clickable { state.onDocumentRequsted() },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,8 +69,8 @@ fun Documents(state: SendPageState) {
                 start = 13.dp,
             ),
         text = stringResource(R.string.send_funds_document_hint),
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.labelLarge,
+        color = colorScheme.primary,
+        style = typography.labelLarge,
     )
 }
 
@@ -87,7 +88,7 @@ private fun DocumentsList(documentsList: List<Uri>) {
                     .border(
                         width = 1.dp,
                         shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = colorScheme.primaryContainer,
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -97,7 +98,7 @@ private fun DocumentsList(documentsList: List<Uri>) {
                             vertical = 16.dp
                         )
                         .background(
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = colorScheme.tertiary,
                             shape = RoundedCornerShape(8.dp),
                         ),
                 ) {
@@ -106,7 +107,7 @@ private fun DocumentsList(documentsList: List<Uri>) {
                             .padding(8.dp)
                             .size(16.dp),
                         painter = painterResource(id = R.drawable.icon_document),
-                        tint = MaterialTheme.colorScheme.tertiaryContainer,
+                        tint = colorScheme.tertiaryContainer,
                         contentDescription = "",
                     )
                 }
@@ -118,8 +119,8 @@ private fun DocumentsList(documentsList: List<Uri>) {
                     },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.labelLarge,
+                    color = colorScheme.onBackground,
+                    style = typography.labelLarge,
                 )
             }
         }
@@ -132,7 +133,7 @@ private fun NoDocuments() {
         modifier = Modifier
             .padding(top = 13.dp)
             .background(
-                color = MaterialTheme.colorScheme.tertiary,
+                color = colorScheme.tertiary,
                 shape = RoundedCornerShape(8.dp),
             ),
     ) {
@@ -141,7 +142,7 @@ private fun NoDocuments() {
                 .padding(8.dp)
                 .size(16.dp),
             painter = painterResource(id = R.drawable.icon_document),
-            tint = MaterialTheme.colorScheme.tertiaryContainer,
+            tint = colorScheme.tertiaryContainer,
             contentDescription = "",
         )
     }
@@ -149,16 +150,16 @@ private fun NoDocuments() {
         modifier = Modifier
             .padding(top = 4.dp),
         text = stringResource(R.string.send_funds_document_upload),
-        color = MaterialTheme.colorScheme.onBackground,
+        color = colorScheme.onBackground,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.bodySmall,
+        style = typography.bodySmall,
     )
     Text(
         modifier = Modifier.padding(top = 13.dp, bottom = 13.dp),
         text = stringResource(R.string.send_funds_document_types),
-        color = MaterialTheme.colorScheme.primary,
+        color = colorScheme.primary,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.labelLarge,
+        style = typography.labelLarge,
     )
 }
 

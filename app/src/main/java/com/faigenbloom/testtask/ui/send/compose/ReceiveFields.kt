@@ -2,7 +2,8 @@ package com.faigenbloom.testtask.ui.send.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,9 +32,9 @@ fun ReceiveFields(state: SendPageState) {
         modifier = Modifier
             .fillMaxWidth(),
         text = stringResource(R.string.send_funds_exchange_label),
-        color = MaterialTheme.colorScheme.onPrimary,
+        color = colorScheme.onPrimary,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.labelLarge,
+        style = typography.labelLarge,
     )
     RatesText(
         firstCurrency = sendCurrency,
@@ -60,9 +61,9 @@ private fun RatesText(
             firstRate,
             secondRate,
         ),
-        color = MaterialTheme.colorScheme.onBackground,
+        color = colorScheme.onBackground,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.labelLarge,
+        style = typography.labelLarge,
     )
 }
 

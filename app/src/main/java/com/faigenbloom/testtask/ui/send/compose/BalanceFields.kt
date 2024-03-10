@@ -2,7 +2,8 @@ package com.faigenbloom.testtask.ui.send.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,16 +30,16 @@ fun BalanceFields(state: SendPageState) {
         modifier = Modifier
             .fillMaxWidth(),
         firstPart = stringResource(R.string.send_funds_balance),
-        firstStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-            color = MaterialTheme.colorScheme.onPrimary,
+        firstStyle = typography.labelLarge.toSpanStyle().copy(
+            color = colorScheme.onPrimary,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
             MoneyTextTransformation().format(balanceText),
         ),
-        secondStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-            color = MaterialTheme.colorScheme.onBackground,
+        secondStyle = typography.labelLarge.toSpanStyle().copy(
+            color = colorScheme.onBackground,
         ),
         textAlign = TextAlign.Center,
     )
@@ -46,16 +47,16 @@ fun BalanceFields(state: SendPageState) {
         modifier = Modifier
             .fillMaxWidth(),
         firstPart = stringResource(R.string.send_funds_available_balance),
-        firstStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-            color = MaterialTheme.colorScheme.onPrimary,
+        firstStyle = typography.labelLarge.toSpanStyle().copy(
+            color = colorScheme.onPrimary,
         ),
         secondPart = stringResource(
             R.string.send_funds_money_with_currency,
             currency.symbol,
             MoneyTextTransformation().format(availableBalanceText),
         ),
-        secondStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-            color = MaterialTheme.colorScheme.onBackground,
+        secondStyle = typography.labelLarge.toSpanStyle().copy(
+            color = colorScheme.onBackground,
         ),
         textAlign = TextAlign.Center,
     )

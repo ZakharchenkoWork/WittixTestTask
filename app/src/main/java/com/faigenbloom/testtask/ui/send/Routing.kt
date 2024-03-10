@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.faigenbloom.testtask.ui.common.BaseDestination
 import com.faigenbloom.testtask.ui.common.DocumentPickerContract
 import com.faigenbloom.testtask.ui.common.DocumentRequest
+import com.faigenbloom.testtask.ui.send.compose.SendPage
 import org.koin.androidx.compose.koinViewModel
 
 const val REASON_SENDING: String = "Sending"

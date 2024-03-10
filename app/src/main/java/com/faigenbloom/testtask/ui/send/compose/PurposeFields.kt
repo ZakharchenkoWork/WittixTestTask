@@ -18,7 +18,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,15 +86,15 @@ fun PurposeFields(state: SendPageState) {
                     stringResource(id = R.string.send_funds_purpose_hint)
                 },
                 color = if (purposeType == PurposeType.NONE) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    colorScheme.onPrimaryContainer
                 } else {
-                    MaterialTheme.colorScheme.onBackground
+                    colorScheme.onBackground
                 },
                 textAlign = TextAlign.Center,
                 style = if (purposeType == PurposeType.NONE) {
-                    MaterialTheme.typography.bodyMedium
+                    typography.bodyMedium
                 } else {
-                    MaterialTheme.typography.titleLarge
+                    typography.titleLarge
                 },
             )
             Icon(
@@ -101,7 +102,7 @@ fun PurposeFields(state: SendPageState) {
                     .padding(end = 16.dp)
                     .size(16.dp),
                 painter = painterResource(id = R.drawable.icon_dropdown),
-                tint = MaterialTheme.colorScheme.tint(),
+                tint = colorScheme.tint(),
                 contentDescription = "",
             )
         }
@@ -120,11 +121,11 @@ fun PurposeFields(state: SendPageState) {
                                     .padding(all = 8.dp),
                                 text = menuItemType.stringResource(),
                                 color = if (purposeType == menuItemType) {
-                                    MaterialTheme.colorScheme.secondaryContainer
+                                    colorScheme.secondaryContainer
                                 } else {
-                                    MaterialTheme.colorScheme.onBackground
+                                    colorScheme.onBackground
                                 },
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = typography.bodyMedium,
                             )
                         },
                         onClick = {
@@ -166,8 +167,8 @@ fun PurposeFields(state: SendPageState) {
                         .fillMaxWidth()
                         .padding(all = 8.dp),
                     value = purposeText,
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    textStyle = typography.titleLarge,
+                    color = colorScheme.onBackground,
                     onValueChange = {
                         purposeText = it
                         isError = false
@@ -180,8 +181,8 @@ fun PurposeFields(state: SendPageState) {
                         Text(
                             modifier = Modifier,
                             text = stringResource(id = R.string.send_funds_purpose_value_hint),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            style = MaterialTheme.typography.bodyMedium,
+                            color = colorScheme.onPrimaryContainer,
+                            style = typography.bodyMedium,
                         )
                     }
                 }

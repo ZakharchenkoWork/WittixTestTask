@@ -6,7 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,14 +46,14 @@ fun SendingOptions(state: SendPageState) {
             modifier = Modifier
                 .padding(end = 16.dp),
             text = stringResource(R.string.send_funds_beneficiary),
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.labelLarge,
+            color = colorScheme.primary,
+            style = typography.labelLarge,
         )
         WittixCheckbox(
             modifier = Modifier.size(16.dp),
             checked = isSaveBeneficiaryState,
             onCheckedChange = { isSaveBeneficiaryState = it },
-            color = MaterialTheme.colorScheme.tertiaryContainer,
+            color = colorScheme.tertiaryContainer,
         )
     }
     Divider(
@@ -60,7 +61,7 @@ fun SendingOptions(state: SendPageState) {
             .fillMaxWidth()
             .padding(top = 16.dp)
             .padding(horizontal = 16.dp),
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = colorScheme.primaryContainer,
     )
     Row(
         modifier = Modifier
@@ -75,14 +76,14 @@ fun SendingOptions(state: SendPageState) {
                 .fillMaxWidth(0.95f)
                 .padding(end = 16.dp),
             firstPart = stringResource(R.string.send_funds_agreement_text),
-            firstStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-                color = MaterialTheme.colorScheme.primary,
+            firstStyle = typography.labelLarge.toSpanStyle().copy(
+                color = colorScheme.primary,
             ),
             secondPart = stringResource(
                 R.string.send_funds_agreement_more,
             ),
-            secondStyle = MaterialTheme.typography.labelLarge.toSpanStyle().copy(
-                color = MaterialTheme.colorScheme.secondaryContainer,
+            secondStyle = typography.labelLarge.toSpanStyle().copy(
+                color = colorScheme.secondaryContainer,
                 textDecoration = TextDecoration.Underline,
             ),
             textAlign = TextAlign.Justify,
@@ -96,9 +97,9 @@ fun SendingOptions(state: SendPageState) {
                 isAgreedError = isAgreedError && it.not()
             },
             color = if (isAgreedError.not()) {
-                MaterialTheme.colorScheme.tertiaryContainer
+                colorScheme.tertiaryContainer
             } else {
-                MaterialTheme.colorScheme.error
+                colorScheme.error
             },
         )
     }
