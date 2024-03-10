@@ -6,7 +6,7 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 
 class DocumentPickerContract : ActivityResultContract<DocumentRequest, DocumentResponse?>() {
-    private var lastInput: DocumentRequest? = null
+    private var lastInputReason: String? = null
 
     // File types allowed: JPEG, JPG, PNG, PDF, DOC, DOCX.
     private val documentType: Array<String> = arrayOf(
@@ -19,7 +19,7 @@ class DocumentPickerContract : ActivityResultContract<DocumentRequest, DocumentR
     )
 
     override fun createIntent(context: Context, input: DocumentRequest): Intent {
-        lastInput = input
+        lastInputReason = input.reason
         return Intent.createChooser(
             Intent().apply {
                 putExtra(
@@ -35,15 +35,21 @@ class DocumentPickerContract : ActivityResultContract<DocumentRequest, DocumentR
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): DocumentResponse {
-        intent?.data?.let {
-            val galleryResponse = DocumentResponse(
-                reason = lastInput?.reason,
-                uri = it,
-            )
-            lastInput = null
-            return galleryResponse
-        }
-        return DocumentResponse(null, null)
+        val lastInput = lastInputReason
+        lastInputReason = null
+        return DocumentResponse(
+            reason = lastInput,
+            uriList = intent?.clipData?.let {
+                val result = ArrayList<Uri>()
+                for (i in 0 until it.itemCount) {
+                    val uri: Uri = it.getItemAt(i).uri
+                    result += uri
+                }
+                result
+            } ?: intent?.data?.let {
+                listOf(it)
+            } ?: emptyList(),
+        )
     }
 }
 
@@ -53,5 +59,5 @@ data class DocumentRequest(
 
 data class DocumentResponse(
     val reason: String?,
-    val uri: Uri?,
+    val uriList: List<Uri> = emptyList(),
 )

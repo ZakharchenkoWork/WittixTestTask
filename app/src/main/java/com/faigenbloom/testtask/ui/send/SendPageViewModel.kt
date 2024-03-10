@@ -37,11 +37,13 @@ class SendPageViewModel(
     var onTransfer: () -> Unit = {}
     var onDocumentPickerRequested: () -> Unit = {}
 
-    fun onDocumentLoaded(uri: Uri) {
+    fun onDocumentLoaded(uriList: List<Uri>) {
+        state.isLoadingState.value = true
         viewModelScope.launch {
             delay(3000L)
             _stateFlow.update {
                 it.copy(
+                    pickedDocuments = uriList,
                     successState = it.successState.copy(
                         isShown = true,
                         onFinish = {},
@@ -309,6 +311,7 @@ data class SendPageState(
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedErrorState: MutableState<Boolean> = mutableStateOf(false),
+    val pickedDocuments: List<Uri> = emptyList(),
     val onCurrencyChangeRequsted: (isForSend: Boolean) -> Unit = {},
     val onAmountChanged: (isForSend: Boolean) -> Unit = {},
     val onTransferOptionsChanged: () -> Unit = {},

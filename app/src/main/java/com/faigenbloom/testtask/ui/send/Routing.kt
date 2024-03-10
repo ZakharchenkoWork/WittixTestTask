@@ -23,11 +23,9 @@ fun NavGraphBuilder.sendPage(
     ) {
         val viewModel = koinViewModel<SendPageViewModel>()
         val launcher = rememberLauncherForActivityResult(DocumentPickerContract()) {
-            it?.let {
-                if (it.reason == REASON_SENDING) {
-                    it.uri?.let { uri ->
-                        viewModel.onDocumentLoaded(uri)
-                    }
+            it?.let { response ->
+                if (response.reason == REASON_SENDING) {
+                    viewModel.onDocumentLoaded(response.uriList)
                 }
             }
         }
@@ -36,7 +34,6 @@ fun NavGraphBuilder.sendPage(
         viewModel.onDocumentPickerRequested = {
             launcher.launch(DocumentRequest(REASON_SENDING))
         }
-
         val state by viewModel.stateFlow.collectAsState()
         SendPage(
             modifier = Modifier.padding(
