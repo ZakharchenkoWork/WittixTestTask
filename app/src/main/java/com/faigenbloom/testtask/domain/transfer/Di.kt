@@ -5,4 +5,5 @@ import org.koin.dsl.module
 
 val transferModule = module {
     singleOf(::GetTransferPriceUseCase)
+    singleOf(::CalculateTransferAmountUseCase)
 }

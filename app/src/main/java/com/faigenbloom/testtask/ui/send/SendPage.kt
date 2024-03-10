@@ -114,6 +114,7 @@ private fun MainInfo(state: SendPageState) {
             amountState = state.sendAmountState,
             currencyState = state.sendCurrencyState,
             onCurrencyClicked = { state.onCurrencyChangeRequsted(true) },
+            onAmountChanged = { state.onAmountChanged(true) },
         )
         BalanceFields(state = state)
         AmountInputField(
@@ -121,6 +122,7 @@ private fun MainInfo(state: SendPageState) {
             amountState = state.receiveAmountState,
             currencyState = state.receiveCurrencyState,
             onCurrencyClicked = { state.onCurrencyChangeRequsted(false) },
+            onAmountChanged = { state.onAmountChanged(false) },
         )
         ReceiveFields(state = state)
         ExchangeRatesHint()
@@ -141,6 +143,7 @@ private fun AmountInputField(
     amountState: MutableState<TextFieldValue>,
     currencyState: MutableState<Currency>,
     onCurrencyClicked: () -> Unit,
+    onAmountChanged: () -> Unit,
 ) {
     var sendAmountText by remember { amountState }
     val sendCurrency by remember { currencyState }
@@ -175,6 +178,7 @@ private fun AmountInputField(
             visualTransformation = MoneyTextTransformation(),
             onValueChange = {
                 sendAmountText = it
+                onAmountChanged()
             },
         ) {
             Row(
@@ -336,7 +340,10 @@ private fun TransferOptions(state: SendPageState) {
                 .weight(0.5f),
             text = stringResource(R.string.send_funds_transfer_options_regular),
             isChecked = isTransferRegular,
-            onClick = { isTransferRegular = true },
+            onClick = {
+                isTransferRegular = true
+                state.onTransferOptionsChanged()
+            },
         )
         OptionButton(
             modifier = Modifier
@@ -350,7 +357,10 @@ private fun TransferOptions(state: SendPageState) {
                 ),
             ),
             isChecked = isTransferRegular.not(),
-            onClick = { isTransferRegular = false },
+            onClick = {
+                isTransferRegular = false
+                state.onTransferOptionsChanged()
+            },
         )
     }
 }

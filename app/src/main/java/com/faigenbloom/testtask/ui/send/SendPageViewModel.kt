@@ -11,6 +11,7 @@ import com.faigenbloom.testtask.domain.currency.GetAllCurrenciesUseCase
 import com.faigenbloom.testtask.domain.currency.GetMainCurrencyUseCase
 import com.faigenbloom.testtask.domain.currency.GetReceiverCurrencyUseCase
 import com.faigenbloom.testtask.domain.exchange.GetExchangeRatesUseCase
+import com.faigenbloom.testtask.domain.transfer.CalculateTransferAmountUseCase
 import com.faigenbloom.testtask.domain.transfer.GetTransferPriceUseCase
 import com.faigenbloom.testtask.ui.common.animations.AnimationState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,8 @@ import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
+const val NO_AMOUNT_VALUE = "0"
+
 class SendPageViewModel(
     private val getMainCurrencyUseCase: GetMainCurrencyUseCase,
     private val getReceiverCurrencyUseCase: GetReceiverCurrencyUseCase,
@@ -27,9 +30,12 @@ class SendPageViewModel(
     private val getBalanceUseCase: GetBalanceUseCase,
     private val getExchangeRatesUseCase: GetExchangeRatesUseCase,
     private val getTransferPriceUseCase: GetTransferPriceUseCase,
+    private val calculateTransferAmountUseCase: CalculateTransferAmountUseCase,
 ) : ViewModel() {
+    private var isLastChangedAmountWasSend: Boolean = true
     var onTransfer: () -> Unit = {}
     var onDocumentPickerRequested: () -> Unit = {}
+
     fun onDocumentLoaded(uri: Uri) {
         _stateFlow.update {
             it.copy(
@@ -81,6 +87,51 @@ class SendPageViewModel(
         }
         viewModelScope.launch {
             updateCurrencies()
+        }
+    }
+
+    private fun onAmountChanged(isForSend: Boolean) {
+        isLastChangedAmountWasSend = isForSend
+        viewModelScope.launch {
+            val fieldToCalculate = if (isForSend) {
+                state.receiveAmountState
+            } else {
+                state.sendAmountState
+            }
+            val changedField = if (isForSend) {
+                state.sendAmountState
+            } else {
+                state.receiveAmountState
+            }
+            val enteredAmount = changedField.value.text
+            val exchangeRate = if (isForSend) {
+                state.exchangeRateState.value
+            } else {
+                state.reverseExchangeRateState.value
+            }
+            val transferPrice = if (state.isTransferRegularState.value.not()) {
+                state.expressPriceAmount.value
+            } else {
+                NO_AMOUNT_VALUE
+            }
+
+            fieldToCalculate.value = TextFieldValue(
+                if (enteredAmount.isNotBlank()) {
+                    val calculatedAmount = calculateTransferAmountUseCase(
+                        isForSend = isForSend,
+                        amount = enteredAmount,
+                        rate = exchangeRate,
+                        transferPrice = transferPrice,
+                    )
+                    if (calculatedAmount.contains("-").not()) {
+                        calculatedAmount
+                    } else {
+                        NO_AMOUNT_VALUE
+                    }
+                } else {
+                    NO_AMOUNT_VALUE
+                },
+            )
         }
     }
 
@@ -142,6 +193,8 @@ class SendPageViewModel(
             onTransfer = ::onTransfer,
             onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
             onDocumentRequsted = ::onDocumentPicker,
+            onAmountChanged = ::onAmountChanged,
+            onTransferOptionsChanged = { onAmountChanged(isLastChangedAmountWasSend) },
         ),
     )
     val stateFlow = _stateFlow.asStateFlow()
@@ -177,7 +230,9 @@ data class SendPageState(
     val dropdownShownState: MutableState<Boolean> = mutableStateOf(false),
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
-    val onCurrencyChangeRequsted: (Boolean) -> Unit,
+    val onCurrencyChangeRequsted: (isForSend: Boolean) -> Unit = {},
+    val onAmountChanged: (isForSend: Boolean) -> Unit = {},
+    val onTransferOptionsChanged: () -> Unit = {},
     val onDocumentRequsted: () -> Unit = {},
     val onTransfer: () -> Unit = {},
 )
