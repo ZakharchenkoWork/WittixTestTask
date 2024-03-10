@@ -13,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.faigenbloom.testtask.ui.common.WittixBottomNavigationBar
 import com.faigenbloom.testtask.ui.common.WittixFloatingActionButton
+import com.faigenbloom.testtask.ui.placeholder.PlaceholderPageRoute
+import com.faigenbloom.testtask.ui.placeholder.placeholderPage
 import com.faigenbloom.testtask.ui.send.SendPageRoute
 import com.faigenbloom.testtask.ui.send.sendPage
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         WittixFloatingActionButton(
                             onClicked = {
                                 selectedBottomNavigationIndex = 2
-                                mainNavController.navigate(SendPageRoute())
+                                mainNavController.navigate(PlaceholderPageRoute())
                             },
                         )
                     },
@@ -52,8 +54,11 @@ class MainActivity : ComponentActivity() {
                         sendPage(
                             padding = padding,
                             onTransfer = {
-                                // mainNavController.navigate(LoginRoute())
+                                mainNavController.navigate(PlaceholderPageRoute())
                             },
+                        )
+                        placeholderPage(
+                            padding = padding,
                         )
                     }
                 }

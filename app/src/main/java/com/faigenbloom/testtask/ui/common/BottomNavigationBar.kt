@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.faigenbloom.testtask.R
+import com.faigenbloom.testtask.ui.placeholder.PlaceholderPageRoute
 import com.faigenbloom.testtask.ui.send.SendPageRoute
 import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 
@@ -45,7 +46,7 @@ val items = listOf(
         label = R.string.bar_dashboard,
     ),
     BarItem(
-        destination = SendPageRoute(),
+        destination = PlaceholderPageRoute(),
         icon = R.drawable.icon_statment,
         label = R.string.bar_statement,
     ),
@@ -55,12 +56,12 @@ val items = listOf(
         label = R.string.bar_add,
     ),
     BarItem(
-        destination = SendPageRoute(),
+        destination = PlaceholderPageRoute(),
         icon = R.drawable.icon_debit_cards,
         label = R.string.bar_debit,
     ),
     BarItem(
-        destination = SendPageRoute(),
+        destination = PlaceholderPageRoute(),
         icon = R.drawable.icon_settings,
         label = R.string.bar_settings,
     ),
@@ -112,15 +113,15 @@ private fun WittixBarItem(
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .clickable {
+                onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             modifier = Modifier
                 .size(24.dp)
-                .clickable {
-                    onClick()
-                }
                 .padding(4.dp),
             painter = painterResource(
                 id = barItem.icon,

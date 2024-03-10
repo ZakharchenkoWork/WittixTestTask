@@ -63,27 +63,38 @@ class SendPageViewModel(
     private fun onTransferRequseted() {
         viewModelScope.launch {
             recalculateAmount(isLastChangedAmountWasSend)
-            if (state.sendAmountState.value.text.isNotBlank() && state.sendErrorState.value.not()) {
-                if (checkPurposeError().not()) {
-                    if (state.isAgreedState.value) {
-                        _stateFlow.update {
-                            it.copy(
-                                successState = it.successState.copy(
-                                    isShown = true,
-                                ),
-                            )
-                        }
-                        onTransfer()
-                    } else {
-                        state.isAgreedErrorState.value = true
-                    }
+            if (checkAndShowTransferErrors()) {
+                _stateFlow.update {
+                    it.copy(
+                        successState = it.successState.copy(
+                            isShown = true,
+                            onFinish = {
+                                onTransfer()
+                            },
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    private fun checkAndShowTransferErrors(): Boolean {
+        return if (state.sendAmountState.value.text.isNotBlank() && state.sendErrorState.value.not()) {
+            if (checkPurposeError().not()) {
+                if (state.isAgreedState.value) {
+                    true
                 } else {
-                    state.purposeErrorState.value = true
+                    state.isAgreedErrorState.value = true
+                    false
                 }
             } else {
-                state.sendErrorState.value = true
-                state.animateErrorState.value = true
+                state.purposeErrorState.value = true
+                false
             }
+        } else {
+            state.sendErrorState.value = true
+            state.animateErrorState.value = true
+            false
         }
     }
 
@@ -269,7 +280,11 @@ data class SendPageState(
     val sendErrorState: MutableState<Boolean> = mutableStateOf(false),
     val animateErrorState: MutableState<Boolean> = mutableStateOf(false),
     val receiveAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
-    val receiveCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
+    val receiveCurrencyState: MutableState<Currency> = mutableStateOf(
+        Currency.getInstance(
+            Locale.getDefault(),
+        ),
+    ),
     val balanceState: MutableState<String> = mutableStateOf(""),
     val availableBalanceState: MutableState<String> = mutableStateOf(""),
     val exchangeRateState: MutableState<String> = mutableStateOf(""),

@@ -44,5 +44,13 @@
     <string name="send_funds_transfer">TRANSFER REVIEW</string>
     <string name="currency_dialog_title">Choose currency:</string>
     <string name="dialog_button_done">OK</string>
+    <string name="placeholder_title">This page is Under Construction</string>
+    <string name="placeholder_message_pre">But!</string>
+    <string name="placeholder_message_first">I\'ve heard you are in search of an experienced Android developer to bring your ambitious ideas to life in the realm of mobile technology?</string>
+    <string name="placeholder_message_second">Look no further – I\'m the perfect fit for you!</string>
+    <string name="placeholder_message_third">With a deep understanding of Java and Kotlin programming languages, along with a wealth of experience in creating innovative applications for the Android platform, I guarantee high-quality execution of every project. My ability to effectively collaborate with teams, analyze requirements, and propose creative solutions will help your application stand out in the market and capture users\' attention.</string>
+    <string name="placeholder_message_forth">By partnering with me, you not only gain technical expertise but also meticulous attention to detail, a commitment to excellence, and ongoing strengthening of knowledge in the rapidly evolving field of Android development. Entrust your project to me, and I\'ll transform your ideas into intuitive, functional, and stylish mobile applications capable of winning the hearts of users worldwide.</string>
+    <string name="placeholder_message_fifth">Faithfully yours,</string>
+    <string name="placeholder_developer">Zakharchenko Kostiantyn</string>
 
 </resources>
