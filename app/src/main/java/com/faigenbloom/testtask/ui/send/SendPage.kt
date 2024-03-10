@@ -60,6 +60,7 @@ import com.faigenbloom.testtask.ui.common.TopBar
 import com.faigenbloom.testtask.ui.common.WittixCheckbox
 import com.faigenbloom.testtask.ui.common.animations.AnimateTabs
 import com.faigenbloom.testtask.ui.common.animations.AnimatedVisibility
+import com.faigenbloom.testtask.ui.common.animations.Loading
 import com.faigenbloom.testtask.ui.common.animations.Success
 import com.faigenbloom.testtask.ui.common.getFlag
 import com.faigenbloom.testtask.ui.common.text.BaseTextField
@@ -101,6 +102,7 @@ fun SendPage(
         }
     }
     CurrencyDialog(state = state.currencyDialogState)
+    Loading(state.isLoadingState)
     Success(state.successState)
 }
 

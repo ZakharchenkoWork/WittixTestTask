@@ -14,6 +14,7 @@ import com.faigenbloom.testtask.domain.exchange.GetExchangeRatesUseCase
 import com.faigenbloom.testtask.domain.transfer.CalculateTransferAmountUseCase
 import com.faigenbloom.testtask.domain.transfer.GetTransferPriceUseCase
 import com.faigenbloom.testtask.ui.common.animations.AnimationState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -37,12 +38,17 @@ class SendPageViewModel(
     var onDocumentPickerRequested: () -> Unit = {}
 
     fun onDocumentLoaded(uri: Uri) {
-        _stateFlow.update {
-            it.copy(
-                successState = it.successState.copy(
-                    isShown = true,
-                ),
-            )
+        viewModelScope.launch {
+            delay(3000L)
+            _stateFlow.update {
+                it.copy(
+                    successState = it.successState.copy(
+                        isShown = true,
+                        onFinish = {},
+                    ),
+                )
+            }
+            state.isLoadingState.value = false
         }
     }
 
@@ -61,6 +67,7 @@ class SendPageViewModel(
     }
 
     private fun onTransferRequseted() {
+        state.isLoadingState.value = true
         viewModelScope.launch {
             recalculateAmount(isLastChangedAmountWasSend)
             if (checkAndShowTransferErrors()) {
@@ -74,6 +81,7 @@ class SendPageViewModel(
                         ),
                     )
                 }
+                state.isLoadingState.value = false
             }
         }
     }
@@ -260,12 +268,14 @@ class SendPageViewModel(
     val stateFlow = _stateFlow.asStateFlow()
 
     init {
+        state.isLoadingState.value = true
         viewModelScope.launch {
             prepareBalances()
             reloadCurrencies()
             updateCurrencies()
             updateCurrenciesInDialog()
             updateTransferPrices()
+            state.isLoadingState.value = false
         }
     }
 }
@@ -288,6 +298,7 @@ data class SendPageState(
     val balanceState: MutableState<String> = mutableStateOf(""),
     val availableBalanceState: MutableState<String> = mutableStateOf(""),
     val exchangeRateState: MutableState<String> = mutableStateOf(""),
+    val isLoadingState: MutableState<Boolean> = mutableStateOf(false),
     val reverseExchangeRateState: MutableState<String> = mutableStateOf(""),
     val isTransferRegularState: MutableState<Boolean> = mutableStateOf(false),
     val expressPriceAmount: MutableState<String> = mutableStateOf(""),

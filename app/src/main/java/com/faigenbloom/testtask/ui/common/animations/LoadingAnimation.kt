@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.airbnb.lottie.compose.LottieAnimation
@@ -15,7 +17,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.faigenbloom.testtask.R
 
 @Composable
-fun Loading(isShown: Boolean) {
+fun Loading(isShownState: MutableState<Boolean>) {
+    val isShown by remember { isShownState }
     if (isShown) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
         val progress by animateLottieCompositionAsState(
