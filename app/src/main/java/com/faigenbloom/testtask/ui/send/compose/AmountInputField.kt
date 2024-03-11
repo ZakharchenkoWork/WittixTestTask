@@ -80,7 +80,10 @@ fun AmountInputField(
                     isError = isError,
                     isChecked = sendAmountText.text.isNotBlank(),
                 ),
-            ),
+            )
+            .semantics {
+                contentDescription = containerDescriptionFor(title)
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BaseTextField(

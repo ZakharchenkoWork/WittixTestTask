@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +50,7 @@ import com.faigenbloom.testtask.ui.theme.tint
 
 @Composable
 fun PurposeFields(state: SendPageState) {
-    var purposeType by remember { state.purposeTypeState }
+    val purposeType by remember { state.purposeTypeState }
     var purposeText by remember { state.purposeTextState }
     var dropdownShown by remember { state.dropdownShownState }
     var isError by remember { state.purposeErrorState }
@@ -75,6 +79,9 @@ fun PurposeFields(state: SendPageState) {
                 )
                 .clickable {
                     dropdownShown = true
+                }
+                .semantics {
+                    contentDescription = containerDescriptionFor(PURPOSE_TYPE)
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -106,38 +113,11 @@ fun PurposeFields(state: SendPageState) {
                 contentDescription = "",
             )
         }
-
-        ExposedDropdownMenu(
-            modifier = Modifier.fillMaxWidth(),
-            expanded = dropdownShown,
-            onDismissRequest = { dropdownShown = false },
-        ) {
-            PurposeType.values().forEach { menuItemType ->
-                if (menuItemType != PurposeType.NONE) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                modifier = Modifier
-                                    .padding(all = 8.dp),
-                                text = menuItemType.stringResource(),
-                                color = if (purposeType == menuItemType) {
-                                    colorScheme.secondaryContainer
-                                } else {
-                                    colorScheme.onBackground
-                                },
-                                style = typography.bodyMedium,
-                            )
-                        },
-                        onClick = {
-                            purposeType = menuItemType
-                            dropdownShown = false
-                            isError = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
-                }
-            }
-        }
+        PurposeTypeDropDownMenu(
+            state.dropdownShownState,
+            state.purposeTypeState,
+            state.purposeErrorState,
+        )
     }
     AnimatedVisibility(
         isVisible = purposeType == PurposeType.NONE || purposeType == PurposeType.OTHER,
@@ -186,6 +166,48 @@ fun PurposeFields(state: SendPageState) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExposedDropdownMenuBoxScope.PurposeTypeDropDownMenu(
+    dropdownShownState: MutableState<Boolean>,
+    purposeTypeState: MutableState<PurposeType>,
+    purposeErrorState: MutableState<Boolean>,
+) {
+    var dropdownShown by remember { dropdownShownState }
+    var purposeType by remember { purposeTypeState }
+    var isError by remember { purposeErrorState }
+    ExposedDropdownMenu(
+        modifier = Modifier.fillMaxWidth(),
+        expanded = dropdownShown,
+        onDismissRequest = { dropdownShown = false },
+    ) {
+        PurposeType.values().forEach { menuItemType ->
+            if (menuItemType != PurposeType.NONE) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            modifier = Modifier
+                                .padding(all = 8.dp),
+                            text = menuItemType.stringResource(),
+                            color = if (purposeType == menuItemType) {
+                                colorScheme.secondaryContainer
+                            } else {
+                                colorScheme.onBackground
+                            },
+                            style = typography.bodyMedium,
+                        )
+                    },
+                    onClick = {
+                        purposeType = menuItemType
+                        dropdownShown = false
+                        isError = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                )
             }
         }
     }
