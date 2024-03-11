@@ -36,5 +36,5 @@ Also Floating action button in design has gradient, so i neaded to create my own
 One last thing. I decided to add a little bit of domain layer, so the ViewModel looks a little bit more production ready.</br>
 
 ## In case you are still not convinced.
-###Just try out some instrumented tests in Android Test folder.
+### Just try out some instrumented tests in Android Test folder.
 
