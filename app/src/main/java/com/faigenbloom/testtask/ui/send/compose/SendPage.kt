@@ -23,9 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -65,9 +64,7 @@ fun SendPage(
 
     LazyColumn(
         modifier = modifier
-            .semantics {
-                contentDescription = MAIN_SCREEN_SCROLL
-            },
+            .testTag(MAIN_SCREEN_SCROLL),
         state = listState,
     ) {
         item {
@@ -107,9 +104,7 @@ fun TransferButton(state: SendPageState) {
                 bottom = 32.dp
             )
             .height(50.dp)
-            .semantics {
-                contentDescription = TRANSFER_BUTTON
-            },
+            .testTag(TRANSFER_BUTTON),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorScheme.tertiaryContainer,

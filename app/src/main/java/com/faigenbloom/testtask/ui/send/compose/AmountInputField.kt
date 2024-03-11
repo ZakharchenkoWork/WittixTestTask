@@ -28,10 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -81,18 +80,14 @@ fun AmountInputField(
                     isChecked = sendAmountText.text.isNotBlank(),
                 ),
             )
-            .semantics {
-                contentDescription = containerDescriptionFor(title)
-            },
+            .testTag(containerDescriptionFor(title)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BaseTextField(
             modifier = Modifier
                 .weight(0.6f)
                 .padding(all = 8.dp)
-                .semantics {
-                    contentDescription = title
-                },
+                .testTag(title),
             value = sendAmountText,
             textStyle = typography.titleLarge,
             color = if (isError.not()) {

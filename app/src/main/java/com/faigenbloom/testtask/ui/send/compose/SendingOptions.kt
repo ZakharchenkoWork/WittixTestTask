@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -90,7 +91,8 @@ fun SendingOptions(state: SendPageState) {
         )
         WittixCheckbox(
             modifier = Modifier
-                .size(16.dp),
+                .size(16.dp)
+                .testTag(AGREEMENT_CHECKBOX),
             checked = isAgreedState,
             onCheckedChange = {
                 isAgreedState = it

@@ -31,10 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,9 +79,7 @@ fun PurposeFields(state: SendPageState) {
                 .clickable {
                     dropdownShown = true
                 }
-                .semantics {
-                    contentDescription = containerDescriptionFor(PURPOSE_TYPE)
-                },
+                .testTag(PURPOSE_TYPE),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -188,6 +185,7 @@ private fun ExposedDropdownMenuBoxScope.PurposeTypeDropDownMenu(
         PurposeType.values().forEach { menuItemType ->
             if (menuItemType != PurposeType.NONE) {
                 DropdownMenuItem(
+                    modifier = Modifier.testTag(menuItemType.name),
                     text = {
                         Text(
                             modifier = Modifier
