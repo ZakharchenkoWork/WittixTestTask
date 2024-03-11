@@ -20,17 +20,19 @@ Also here we are storing Routing information, receiving data from other screens 
 Composable files are divided by logic blocks. Some of them are reusable, so they are designed that way. Other are belong only for specific screens so they are depending on screen specific State. </br>
 I've decided to keep it that way so the code would be a little bit more cleaner and readable.</br>
 
-Screen State consists mainly from MutableState, so that composable can use their data by remember {state}.</br>
+Screen State consists mainly from mutableStateOf(Smth), so that composable can use their data by remember {state.smth}.</br>
 This way we can update specific Composables on the screen without triggering full screen reload.</br>
-If we still need to reload whole screen we still always can update MutableState with state.copy()</br>
-I've tried to make UI as pixel perfect as possible, especially in fonts and sizes.</br>
+If we still need to reload whole screen we still always can update whole screen with _stateFlow.update{ it.copy()}</br>
 
+I've tried to make UI as pixel perfect as possible, especially in fonts and sizes.</br>
 Also there are some fancy animations added in default Android way and my beloved Lottie, and custom ripple efects for example in Floating action button.</br>
-By the check out my solution for bottom nav bar, cut out. It was quite chalange to create it. </br>
-I had to use Bezie cubic curve with subtracting of the path from the bounding rectangle. Pretty cool right?</br>
+By the way, check out my solution for bottom nav bar, cutout. It was quite a chalange to create it. </br>
+I had to use Bezie cubic curve with subtracting of the path from the bounding rectangle to create this shape, so it can be resized for different screens properly.</br>
 <div>
   <img src="images/bezie.png" width="20%"/>
 </div>
+Pretty cool right?</br>
+
 Also Floating action button in design has gradient, so i neaded to create my own version of FAB instead of standart Android one.</br>
 
 One last thing. I decided to add a little bit of domain layer, so the ViewModel looks a little bit more production ready.</br>
