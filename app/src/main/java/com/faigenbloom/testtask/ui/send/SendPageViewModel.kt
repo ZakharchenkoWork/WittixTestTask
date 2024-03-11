@@ -3,6 +3,8 @@ package com.faigenbloom.testtask.ui.send
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,16 +43,13 @@ class SendPageViewModel(
         state.isLoadingState.value = true
         viewModelScope.launch {
             delay(3000L)
-            _stateFlow.update {
-                it.copy(
-                    pickedDocuments = uriList,
-                    successState = it.successState.copy(
-                        isShown = true,
-                        onFinish = {},
-                    ),
-                )
-            }
+            state.pickedDocuments.removeAll(state.pickedDocuments)
+            state.pickedDocuments.addAll(uriList)
             state.isLoadingState.value = false
+            state.successState.value = state.successState.value.copy(
+                isShown = true,
+                onFinish = ::onHideSuccess,
+            )
         }
     }
 
@@ -62,10 +61,7 @@ class SendPageViewModel(
         val purposeType = state.purposeTypeState.value
         val purposeText = state.purposeTextState.value.text
         return purposeType == PurposeType.NONE ||
-            (
-                purposeType == PurposeType.OTHER &&
-                    purposeText.isBlank()
-                )
+                (purposeType == PurposeType.OTHER && purposeText.isBlank())
     }
 
     private fun onTransferRequseted() {
@@ -73,16 +69,10 @@ class SendPageViewModel(
         viewModelScope.launch {
             recalculateAmount(isLastChangedAmountWasSend)
             if (checkAndShowTransferErrors()) {
-                _stateFlow.update {
-                    it.copy(
-                        successState = it.successState.copy(
-                            isShown = true,
-                            onFinish = {
-                                onTransfer()
-                            },
-                        ),
-                    )
-                }
+                state.successState.value = state.successState.value.copy(
+                    isShown = true,
+                    onFinish = onTransfer,
+                )
             }
             state.isLoadingState.value = false
         }
@@ -108,7 +98,7 @@ class SendPageViewModel(
         }
     }
 
-    private fun onCurrencyChangeRequsted(isForSend: Boolean) {
+    private fun onCurrencyChangeRequested(isForSend: Boolean) {
         _stateFlow.update {
             it.copy(
                 currencyDialogState = it.currencyDialogState.copy(
@@ -161,13 +151,7 @@ class SendPageViewModel(
     }
 
     private fun onHideSuccess() {
-        _stateFlow.update {
-            it.copy(
-                successState = it.successState.copy(
-                    isShown = false,
-                ),
-            )
-        }
+        state.successState.value = state.successState.value.copy(isShown = false)
     }
 
     private suspend fun recalculateAmount(isForSend: Boolean) {
@@ -256,12 +240,14 @@ class SendPageViewModel(
             currencyDialogState = CurrencyDialogState(
                 onCurrencyPicked = ::onCurrencyPicked,
             ),
-            successState = AnimationState(
-                isShown = false,
-                onFinish = ::onHideSuccess,
+            successState = mutableStateOf(
+                AnimationState(
+                    isShown = false,
+                    onFinish = ::onHideSuccess,
+                )
             ),
             onTransfer = ::onTransferRequseted,
-            onCurrencyChangeRequsted = ::onCurrencyChangeRequsted,
+            onCurrencyChangeRequsted = ::onCurrencyChangeRequested,
             onDocumentRequsted = ::onDocumentPicker,
             onAmountChanged = ::onAmountChanged,
             onTransferOptionsChanged = ::onTransferOptionsChanged,
@@ -286,7 +272,7 @@ data class SendPageState(
     val currencyDialogState: CurrencyDialogState = CurrencyDialogState(
         onCurrencyPicked = {},
     ),
-    val successState: AnimationState = AnimationState(),
+    val successState: MutableState<AnimationState> = mutableStateOf(AnimationState()),
     val sendAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
     val sendErrorState: MutableState<Boolean> = mutableStateOf(false),
@@ -311,7 +297,7 @@ data class SendPageState(
     val isSaveBeneficiaryState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedState: MutableState<Boolean> = mutableStateOf(false),
     val isAgreedErrorState: MutableState<Boolean> = mutableStateOf(false),
-    val pickedDocuments: List<Uri> = emptyList(),
+    val pickedDocuments: SnapshotStateList<Uri> = emptyList<Uri>().toMutableStateList(),
     val onCurrencyChangeRequsted: (isForSend: Boolean) -> Unit = {},
     val onAmountChanged: (isForSend: Boolean) -> Unit = {},
     val onTransferOptionsChanged: () -> Unit = {},

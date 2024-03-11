@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,6 +36,7 @@ import com.faigenbloom.testtask.ui.theme.TestTaskTheme
 
 @Composable
 fun Documents(state: SendPageState) {
+    val pickedDocuments = remember { state.pickedDocuments }
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,8 +57,8 @@ fun Documents(state: SendPageState) {
             .clickable { state.onDocumentRequsted() },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (state.pickedDocuments.isNotEmpty()) {
-            DocumentsList(documentsList = state.pickedDocuments)
+        if (pickedDocuments.isNotEmpty()) {
+            DocumentsList(documentsList = pickedDocuments)
         } else {
             NoDocuments()
         }
@@ -183,9 +186,11 @@ private fun DocumentsListPreview() {
             Column {
                 Documents(
                     state = SendPageState(
-                        pickedDocuments = listOf(
-                            Uri.EMPTY
-                        )
+                        pickedDocuments = remember {
+                            mutableStateListOf(
+                                Uri.EMPTY
+                            )
+                        }
                     )
                 )
             }
