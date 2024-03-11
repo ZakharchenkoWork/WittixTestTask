@@ -28,7 +28,9 @@ I've tried to make UI as pixel perfect as possible, especially in fonts and size
 Also there are some fancy animations added in default Android way and my beloved Lottie, and custom ripple efects for example in Floating action button.</br>
 By the check out my solution for bottom nav bar, cut out. It was quite chalange to create it. </br>
 I had to use Bezie cubic curve with subtracting of the path from the bounding rectangle. Pretty cool right?</br>
-
+<div>
+  <img src="images/bezie.png" width="20%"/>
+</div>
 Also Floating action button in design has gradient, so i neaded to create my own version of FAB instead of standart Android one.</br>
 
 One last thing. I decided to add a little bit of domain layer, so the ViewModel looks a little bit more production ready.</br>
