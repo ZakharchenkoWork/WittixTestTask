@@ -1,5 +1,8 @@
 package com.faigenbloom.testtask.ui.send
-
+asdfasdfasdfawsdfasdfasdfasdf
+asdfasdfasdf
+asdfas
+dfasdfasdfasdf
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -272,6 +275,7 @@ data class SendPageState(
     val currencyDialogState: CurrencyDialogState = CurrencyDialogState(
         onCurrencyPicked = {},
     ),
+
     val successState: MutableState<AnimationState> = mutableStateOf(AnimationState()),
     val sendAmountState: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue()),
     val sendCurrencyState: MutableState<Currency> = mutableStateOf(Currency.getInstance(Locale.getDefault())),
