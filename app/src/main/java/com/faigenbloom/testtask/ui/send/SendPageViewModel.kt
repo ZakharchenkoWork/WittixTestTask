@@ -1,5 +1,10 @@
 package com.faigenbloom.testtask.ui.send
-
+hjdfhjdfhjdfhjhjsd
+asdklsidfjljkl;dfgs
+sdfjgsdfgjksdnfg
+sdfgl,///////////////////////////////////////////////////////////////////////////
+// 
+///////////////////////////////////////////////////////////////////////////
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
